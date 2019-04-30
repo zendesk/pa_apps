@@ -1,0 +1,389 @@
+html {
+    overflow-y: auto !important;
+}
+
+.user_container img {
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    background-clip: content-box;
+    background-color: #fff;
+    /* width: 100%; */
+    height: 50px;
+    -webkit-box-shadow: 0 0 0 1px rgba(63,63,68,0.05), 0 1px 3px 0 rgba(63,63,68,0.15) !important;
+    box-shadow: 0 0 0 1px rgba(63,63,68,0.05), 0 1px 3px 0 rgba(63,63,68,0.15) !important;
+}
+
+.search_container {
+    padding: 0px 0px 15px 0px;
+}
+
+input.search {
+    display: block;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid lightgrey;
+    outline: none;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+button.sort {
+    padding: 5px 10px;
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid #D8DCDE;
+    border-radius: 4px;
+    box-shadow: none;
+    white-space: nowrap;
+    outline: none !important;
+}
+
+button.sort:hover {
+    background-color: #F8F9F9;
+    border-color: #C2C8CC;
+    color: #2F3941;
+    box-shadow: inset 0 1px 0 #ffffff;
+}
+
+button.sort.asc::after, button.sort.desc::after {
+    position: relative;
+    font-size: 10px;
+    margin-left: 5px;
+    top: -1px;
+    line-height: 1;
+}
+
+button.sort.asc::after {
+    content: "▲";
+}
+
+button.sort.desc::after {
+    content: "▼";
+}
+
+#objects_container {
+    padding:5px;
+}
+
+ul.list {
+    list-style: none;
+    padding-left: 0px;
+}
+
+.card {
+    -webkit-box-shadow: 0 0 0 1px rgba(63,63,68,0.05), 0 1px 3px 0 rgba(63,63,68,0.15) !important;
+    box-shadow: 0 0 0 1px rgba(63,63,68,0.05), 0 1px 3px 0 rgba(63,63,68,0.15) !important;
+    /*border: 1px solid #FFFFFF !important;*/
+}
+
+.card:hover {
+    /*border: 1px solid #141e30 !important;*/
+}
+
+.card-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    opacity: 0;
+    border-top: none !important;
+    background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%) !important; /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 70%) !important; /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 70%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ) !important; /* IE6-9 */
+    transition: .5s ease !important;
+    padding: 0px !important;
+}
+
+.card-footer:hover {
+    opacity: 1;
+}
+
+.btn-more {
+    width: 100%;
+    background: none;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    padding: .75rem 1.25rem;
+}
+
+.btn-less {
+    background: none;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 5px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: none;
+    transition: .5s ease !important;
+}
+
+button.btn-less[aria-expanded="true"]{
+    display: inline-block !important;
+    opacity: .5 !important;
+}
+
+button.btn-less[aria-expanded="true"]:hover {
+    opacity: 1 !important;
+}
+
+button.btn-more[aria-expanded="true"]{
+    transform: rotate(180deg);
+}
+
+#objects_container p, #wizard_container p.object_date {
+    margin-bottom: 0px !important;
+}
+
+.object_id_formatted {
+    margin-bottom: 5px !important;
+}
+
+.object_date {
+    font-size: 12px;
+    color: #68737d;
+}
+
+ul.attribute_list {
+    list-style: none;
+    margin-bottom: 0px;
+    padding-left: 0px;
+}
+
+#modal li.object_attribute, #wizard_container li.object_attribute {
+    display: inline-block;
+    margin-right: 50px;
+    margin-bottom: 25px;
+    vertical-align: top;
+}
+
+#modal .order_detail_attribute {
+    font-size: .88rem;
+}
+
+
+span.label {
+    font-size: 14px;
+    color: #68737d;
+    display: block;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+span.label::first-letter, label::first-letter {
+    text-transform: capitalize;
+}
+
+.event {
+    display: block;
+    position: relative;
+    padding: 12px 40px 5px 40px;
+    cursor: pointer;
+}
+
+.event::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid #68737d;
+    background: #f8f9f9;
+    left: 20;
+    top: 16px;
+}
+.event::after {
+    content: "";
+    width: 1px;
+    height: 52px;
+    display: inline-block;
+    position: absolute;
+    background: #68737d;
+    left: 24.4px;
+    top: 27px;
+    z-index: 1;
+}
+
+.event:last-child::after {
+    display: none;
+}
+
+.event_description {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #2f3941;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.event_type, .event_source {
+    background-color: #F8F9F9;
+    border: 1px solid #C2C8CC;
+    border-radius: 3px;
+    color: #2F3941;
+    display: inline-block;
+    font-size: 11px;
+    line-height: 13px;
+    margin: 10px 3px 15px 3px;
+    padding: 3px 6px 5px 6px;
+}
+
+.event_type {
+    margin-left: 25px;
+}
+
+.event_date {
+    font-size: 12px;
+    color: #68737d;
+    margin-bottom:0px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#wizard_container {
+    padding-top: 15px;
+}
+
+#wizard_container .nav {
+    border-right: 1px solid #e9ecef;
+    margin-top: 78px !important;
+}
+
+#wizard_container .nav-item .nav-link {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    margin-bottom: 5px;
+    transition: none !important;
+    color: #141e30 !important;
+}
+
+#wizard_container .nav-link .nav-link-icon {
+    color:#141e30 !important;
+}
+
+#wizard_container .nav-item .nav-link:hover, #wizard_container .nav-item .nav-link.active {
+    background-image: linear-gradient(to right, #141e30, #243b55) !important;
+    color: #FFFFFF !important;
+}
+
+#wizard_container .nav-link:hover .nav-link-icon, #wizard_container .nav-link.active .nav-link-icon {
+    color: #3f6ad8 !important;
+}
+
+.header-icon {
+    display: inline-block;
+    padding: 10px;
+    float: left;
+    height: 48px;
+    width: 48px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.header-icon .fas {
+    color: #3f6ad8;
+    font-size: 20px;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.header-icon .fas {
+    color: #3f6ad8;
+    font-size: 20px;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+a.user_link {
+    color: #FFFFFF !important;
+    font-weight: bold !important;
+}
+
+a.user_link:hover {
+    color: #FFFFFF !important;
+    font-weight: bold !important;
+    text-decoration: underline !important;
+}
+
+#wizard_container td.order_detail_attribute {
+    font-size: 12px !important;
+}
+
+.sku_header {
+    height: 30px;
+}
+
+.sku_header .card-title {
+    display: inline-block;
+}
+
+#sku_list_container tr {
+    height: 57px; 
+}
+
+#sku_list_container tr:hover td.sku_link_container {
+    opacity: 1;
+}
+
+#sku_list_container td.sku_link_container {
+    position: absolute;
+    right: 0;
+    opacity: 0;
+    background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 30%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 30%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 30%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
+    width: 100px;
+}
+
+#sku_fields, #order_fields {
+    max-height: calc(100% - 171px);
+    max-height: -o-calc(100% - 171px); /* opera */
+    max-height: -webkit-calc(100% - 171px); /* google, safari */
+    max-height: -moz-calc(100% - 171px); /* firefox */
+    overflow-y: scroll;
+}
+
+form {
+    margin-block-end: 0px !important;
+}
+
+button.sku_link {
+    float: right;
+}
+
+.custom-scrollbar {
+    overflow-y: scroll;
+}
+  
+/* To style the document scrollbar, remove `.custom-scrollbar` */
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    /*box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);*/
+    /*border-radius: 10px;*/
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #141e30;
+}
+
+.custom-scrollbar.scroll-md {
+    max-height: 200px;
+}
+  

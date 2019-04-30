@@ -1,0 +1,469 @@
+<html>
+    <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="src/styles.css" type="text/css">
+    <link rel="stylesheet" href="src/architecture-main.css" type="text/css">
+    <script src="src/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="src/list.min.js" type="text/javascript"></script>
+    <style>
+        @font-face{
+        font-family:'Font Awesome 5 Free';
+        font-style:normal;font-weight:900;
+        src:url(fonts/fa-solid-900.eot);
+        src:url(fonts/fa-solid-900.eot?#iefix) format("embedded-opentype"),url(fonts/fa-solid-900.woff2) format("woff2"),url(fonts/fa-solid-900.woff) format("woff"),url(fonts/fa-solid-900.ttf) format("truetype"),url(fonts/fa-solid-900.svg#fontawesome) format("svg")
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container" id="wizard_container">
+            <div class="row">
+                <div class="col-md-2">
+                        <ul class="nav flex-column">
+                        <li class="nav-item-header nav-item">Manage</li>
+                        <li class="nav-item"><a data-toggle="tab" href="#order_container" class="nav-link active" id="order"><i class="nav-link-icon fas fa-cart-plus"></i><span>Orders</span></a></li>
+                        <li class="nav-item"><a data-toggle="tab" href="#sku_container" class="nav-link" id="sku"><i class="nav-link-icon fas fa-tags"></i><span>Products</span></a></li>
+                    </ul>
+                </div>
+                <div class="col-md-10">
+                    <div class="tab-content">
+                        <div class="tab-pane show active" id="order_container" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="header-icon bg-royal"><i class="fas fa-cart-plus"></i></div>
+                                    <h1 class="mb-4">Orders</h1>
+                                </div>
+                                <div class="col-md-5">
+                                    <h4>Create new order</h4>
+                                    <form id="order_form">
+                                        <button class="mt-2 btn btn-primary" type="submit" value="Submit">Create</button>
+                                    </form>
+                                </div>
+                                <div class="col-md-7">
+                                    <h4>Order list</h4>
+                                    <div id="order_list"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane show" id="sku_container" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="header-icon bg-royal"><i class="fas fa-tags"></i></div>
+                                    <h1 class="mb-4">Products</h1>
+                                </div>
+                                <div class="col-md-5">
+                                    <h4>Create new product</h4>
+                                    <form id="sku_form">
+                                        <button class="mt-2 btn btn-primary" type="submit" value="Submit">Create</button>
+                                    </form>
+                                </div>
+                                <div class="col-md-7">
+                                    <h4>Product list</h4>
+                                    <div id="sku_list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+        <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+        <script>
+        //Initialise the Zendesk JavaScript API client
+        var client = ZAFClient.init();
+
+        //Create form & list of object on both tabs
+        var array = ["order", "sku"];
+        array.forEach(element => {
+            createForm(element);
+            createList(element);
+
+            //Get inputs in SKU form & stringify & escape characters
+            var form = document.getElementById(element + '_form');
+            form.addEventListener('submit', function(event){
+                event.preventDefault();
+                var formData = new FormData(form),
+                    result = {};
+
+                for (var entry of formData.entries())
+                {
+                    if (entry[0] === 'external_id'){
+                        var external_id = entry[1];
+                    } else if (entry[0] === 'user_id'){
+                        var user_id = entry[1];
+                    } else {
+                        result[entry[0]] = entry[1];
+                    }
+                }
+                result = JSON.stringify(result);
+                var data = '{\"data\":{\"external_id\":\"' + external_id + '\",\"type\":\"' + element + '\",\"attributes\":' + result + '}}'
+                var data_escaped = data.replace(/[\\]/g, '\\\\')
+                                            .replace(/[\"]/g, '\\\"')
+                                            .replace(/[\/]/g, '\\/')
+                                            .replace(/[\b]/g, '\\b')
+                                            .replace(/[\f]/g, '\\f')
+                                            .replace(/[\n]/g, '\\n')
+                                            .replace(/[\r]/g, '\\r')
+                                            .replace(/[\t]/g, '\\t');              
+
+                var CreateSettings = {
+                    "url": "/api/custom_resources/resources",
+                    "method": "POST",
+                    "headers": {
+                    "content-type": "application/json"
+                    },
+                    "processData": false,
+                    "data": data
+                };
+
+                //Create object record and create relationship with user based on user ID
+                client.request(CreateSettings).then(function(response){
+                    client.invoke('notify', element + ' created! Well done!');
+
+                    if(element === "order") {
+                        var linkUserSettings = {
+                            "url":"/api/custom_resources/relationships",
+                            "method": "POST",
+                            "headers": {
+                                "content-type": "application/json"
+                            },
+                            "processData": false,
+                            "data": '{\"data\":{\"relationship_type\": \"ordered\",\"source\": \"zen:user:' + user_id + '\",\"target\": \"'+ response.data.id +'\"}}'
+                        };
+
+                        client.request(linkUserSettings).then(function(response){
+                            window.location.reload();
+                        }).catch(function(error){
+                            //Display error message (see function below)
+                            showCoError(error,'#' + element + '_form');
+                        });
+                    } else {
+                        window.location.reload();
+                    };
+
+                }).catch(function(error){
+                    //Display error message (see function below)
+                    showCoError(error,'#' + element + '_form');
+                });
+            });
+        });
+
+        //Load script once object list is created
+        $.when(createList).done(function(){
+            $.getScript('src/architecture-main.js', function(){
+            });
+        });
+
+        /* FUNCTIONS */
+
+        //Function - Create SKU/Order creation form
+        function createForm(){
+
+            //Get argument from function
+            var element = arguments[0];
+
+            //Get object type "sku" attributes
+            var objectTypeSettings = {"url": "/api/custom_resources/resource_types/" + element};
+            client.request(objectTypeSettings).then(function(response){
+                var objectType = response.data;
+                var objectType_properties = objectType.schema.properties;
+                var objectType_properties_list = '';
+
+                //Loop through properties
+                for(var key in objectType_properties){
+
+                    objectType_properties_list += '<div class="position-relative form-group"><label for="' + key + '">' + key + '</label><input name="' + key + '" id="' + key.replace(/ /g,"_") + '" type="text" class="form-control" /></div>';
+                }
+
+                //Add form to DOM
+                $('#' + element + '_form').prepend('<div class="form-row"><div class="col-md-12 custom-scrollbar" id="' + element + '_fields"><div class="position-relative form-group"><label for="' + element + '_name">' + element + ' name*</label><input name="external_id" id="external_id" type="text" class="form-control" placeholder="a unique name for your ' + element + '" required/></div>' + objectType_properties_list + '</div></div>');
+
+                //Add additional field for User ID on order form
+                if (element === 'order'){
+                    $('#order_fields').prepend('<div class="position-relative form-group"><label for="user_id">User ID*</label><input name="user_id" id="user_id" type="text" class="form-control" placeholder="the end-user attached to this order" required /></div>');
+                } else {};
+
+            }).catch(function(error){
+
+                //Display error message (see function below)
+                showCoError(error, '#' + element + '_form');
+            });
+        };
+
+        //Function - Create list of existing SKUs/Orders
+        function createList(){
+
+            //Get argument from function
+            var element = arguments[0];
+
+            //Get list of existing SKUs/Orders based on parameter from array above
+            var ListSettings = {"url": "/api/custom_resources/resources?type=" + element + "&order=desc"};
+            client.request(ListSettings).then(function(response){
+                var object = response.data;
+                var object_list = '';
+
+                if (object.length === 0){
+                    $('#' + element + '_list').prepend('<div class="alert alert-warning fade show" role="alert">No ' + element + ' found. Create your first ' + element + ' now by filling up the form!</div>');
+                } else {
+
+                    //Loop through objects
+                    for(var i = 0; i < object.length; i++){
+                        var zendesk_id = object[i].id;
+                        var object_date = object[i].created_at;
+                        var object_date_formatted = new Date(Date.parse(object_date)).toUTCString();
+                        var object_attributes = object[i].attributes;
+                        var object_attribute_list = '';
+                        var external_id = object[i].external_id;
+                        
+                        //Loop through object attributes for each objects
+                        for(var key in object_attributes){
+
+                            //Check if any attribute is an image (extension jpg, jpeg, png, gif)
+                            var extension = object_attributes[key].substr( (object_attributes[key].lastIndexOf('.') +1) );
+                            switch(extension) {
+                            case 'jpg':
+                            case 'jpeg':
+                            case 'png':
+                            case 'gif':
+                                
+                                //If attribute is image, render as img
+                                object_attribute_list += '<li class="object_attribute"><span class="label">' + key.replace(/_/g, ' ') + '</span><img src="img/' + object_attributes[key] + '" height="40px"/></li>';
+                            break;
+                            default:
+                                
+                                //If attribute is not an image, render as text
+                                object_attribute_list += '<li class="object_attribute"><span class="label">' + key.replace(/_/g, ' ') + '</span>' + object_attributes[key] + '</li>';
+                            };
+
+                            //object_attribute_list += '<li class="object_attribute"><span class="label">' + key.replace(/_/g, ' ') + '</span>' + object_attributes[key] + '</li>';
+                        };
+
+                        object_list += '<li class="object" id="object_' + zendesk_id + '"><div class="main-card mb-2 card"><div class="card-body"><h5 class="card-title object_id_formatted">' + external_id + '</h5><p class="object_timestamp" style="display:none;">' + object_date + '</p><p class="object_date">' + object_date_formatted + '</p><button type="button" data-toggle="collapse" href="#collapse_' + zendesk_id + '" class="btn-less"><i class="fas fa-times"></i></button><div class="collapse" id="collapse_' + zendesk_id + '"><hr><ul class="attribute_list">' + object_attribute_list + '</ul><hr><button class="mb-2 mr-2 btn-transition btn btn-outline-danger object_delete" id="' + zendesk_id + '">Delete</button></div></div><div class="card-footer"><button type="button" data-toggle="collapse" href="#collapse_' + zendesk_id + '" class="btn-more btn-more-' + element + '" id="' + zendesk_id + '"><i class="fas fa-angle-down"></i></button></div></div></li>';
+                    };
+
+                    //Add list to DOM
+                    $('#' + element + '_list').append('<ul class="list">' + object_list +'</ul>');
+
+                    //Add orderer & skus to the order
+                    if(element === "order"){
+                        showOrderer();
+                        
+                        $('.btn-more').one("click", function(){
+                            var id = $(this).attr('id');
+
+                            $('#collapse_' + id + ' .attribute_list').after('<div class="sku_header mb-2"><h5 class="card-title">Related products</h5><button class="mb-2 mr-2 btn-transition btn btn-outline-success sku_create" id="' + id + '" style="float: right;"><i class="fas fa-plus"></i></button></div><div class="custom-scrollbar scroll-md sku_list"><div class="table-responsive" id="sku_detail_container"><table class="mb-0 table"><thead><tr></tr></thead><tbody></tbody></table></div></div>');
+
+                            //Get relationships "contains" related to order
+                            var containsRelationshipsSettings = {"url": "/api/custom_resources/resources/" + id + "/relationships/contains"};
+                            client.request(containsRelationshipsSettings).then(function(response){
+                                var relationship = response.data;
+                                sku_list = '';
+                                var first = true;
+
+                                if (relationship.length === 0){
+                                    $('#collapse_' + id + ' .sku_list').prepend('<div class="alert alert-warning fade show" role="alert">No product linked to this order. <a class="sku_create alert-link" id="' + id + '" href="javascript:void(0)">Add one now</a>.</div>');
+                                } else {
+                                    for(var i = 0; i < relationship.length; i++){
+                                        let relationship_id = relationship[i].id;
+                                        var relationship_target = relationship[i].target;
+
+                                        //Get list of SKUs related to order
+                                        var relatedSkuSettings = {"url": "/api/custom_resources/resources/" + relationship_target};
+                                        client.request(relatedSkuSettings).then(function(response){
+                                            var sku = response.data;
+                                            var sku_attribute_list = '';
+                                            var sku_attribute_keys = '';
+                                            
+                                            if(first) {
+
+                                                //Reset first value to only loop with first element
+                                                first = false;
+
+                                                //Loop through each sku keys and create first line of the table
+                                                for (var key in sku.attributes){
+                                                    sku_attribute_keys += '<th><span class="label">' + key.replace(/_/g, ' ') + '</span></th>';
+                                                };
+
+                                                //Add to DOM
+                                                $('#collapse_' + id + ' .table-responsive thead tr').prepend('<th><span class="label">Edit</span></th>' + sku_attribute_keys);
+                                                
+                                            } else {};
+
+                                            //Loop through each sku key and get attributes
+                                            for (var key in sku.attributes){
+                                                //Check if any attribute is an image (extension jpg, jpeg, png, gif)
+                                                var extension = sku.attributes[key].substr( (sku.attributes[key].lastIndexOf('.') +1) );
+                                                switch(extension) {
+                                                case 'jpg':
+                                                case 'jpeg':
+                                                case 'png':
+                                                case 'gif':
+                                                    
+                                                    //If attribute is image, render as img
+                                                    sku_attribute_list += '<td class="order_detail_attribute"><img src="img/' + sku.attributes[key] + '" height="40px"/></td>';
+                                                break;
+                                                default:
+                                                    
+                                                    //If attribute is not an image, render as text
+                                                    sku_attribute_list += '<td class="order_detail_attribute">' + sku.attributes[key] + '</td>';
+                                                };
+                                            };
+
+                                            //Add to DOM
+                                            $('#collapse_' + id + ' .table-responsive tbody').prepend('<tr id="row_' + relationship_id + '"><td class="sku_delete_container"><button class="mr-2 btn-transition btn btn-outline-danger sku_delete" id="' + relationship_id + '"><i class="fas fa-trash-alt"></i></button></td>' + sku_attribute_list + '</tr>');
+                                        });        
+                                    };
+                                };
+
+                                //Function - Show SKU list modal
+                                $('.sku_create').click(function(){
+                                    var id = $(this).attr('id');
+                                    
+                                    //Pop modal (see function below)
+                                    popModal(id);
+                                });
+                            }).catch(function(error){
+                                //Display error message (see function below)
+                                showCoError(error,'#collapse_' + id + ' .sku_list');
+                            });
+                        });
+
+                        //Function - Delete relationship between sku & order
+                        $('.collapse').on('click', '.sku_delete', function(){
+                            var sku_relationship_id = $(this).attr('id');
+                            //Delete selected object
+                            var skuRelationshipDeleteSettings = {
+                                "url": "/api/custom_resources/relationships/" + sku_relationship_id,
+                                "method": "DELETE"
+                            };
+                            client.request(skuRelationshipDeleteSettings).then(function(response){
+                                $('#row_' + sku_relationship_id).remove();
+                                client.invoke('notify','product removed! so long!');
+                            }).catch(function(error){
+                
+                                //Display error message (see function below)
+                                showCoError(error,);
+                            });
+                        });
+
+                    } else {};
+
+                    //Function - Delete object
+                    $('.object_delete').click(function(){
+                        var this_object_id = $(this).attr('id');
+
+                        //Delete selected object
+                        var skuDeleteSettings = {
+                            "url": "/api/custom_resources/resources/" + this_object_id,
+                            "method": "DELETE"
+                        };
+                        client.request(skuDeleteSettings).then(function(response){
+                            client.invoke('notify', element + ' deleted! Bye!');
+                            window.location.reload();
+
+                            //window.location.reload();
+                        }).catch(function(error){
+            
+                            //Display error message (see function below)
+                            showCoError(error,'#' + element + '_list');
+                        });
+                    });
+                };
+            }).catch(function(error){
+        
+                //Display error message (see function below)
+                showCoError(error, '#' + element + '_list');
+            });
+        };
+
+        //Function - Show user linked to a specific order and allow deletion of the relationshi between user & order
+        function showOrderer(){
+
+            //Get all relationship records
+            var ordererSettings = {"url":"/api/custom_resources/relationships?type=ordered"};
+            client.request(ordererSettings).then(function(response){
+                var relationship = response.data;
+
+                //Loop through all relationship records
+                for (var i = 0; i < relationship.length; i++){
+                    relationship_id = relationship[i].id;
+                    relationship_target = relationship[i].target;
+                    relationship_source_formatted = relationship[i].source.replace('zen:user:', '');
+
+                    //Add relationship source (user) to relationship target (order) and unlink button
+                    $("#collapse_" + relationship_target).prepend('<hr><div class="card mb-1 widget-content bg-royal"><div class="widget-content-wrapper text-white"><div class="widget-content-left">Order related to&nbsp;<a href="agent/users/' + relationship_source_formatted + '" class="user_link">user ' + relationship_source_formatted + '</a></div><div class="widget-content-right"><button class="btn-transition btn btn-outline-danger relationship_delete" id="' + relationship_id + '">Unlink</button></div></div></div>');
+                };
+
+                //Delete relationship when unlink button is clicked
+                $('.relationship_delete').click(function(){
+                    var id = $(this).attr('id');
+
+                    //Delete selected relationship
+                    var relationshipDeleteSettings = {
+                        "url": "/api/custom_resources/relationships/" + id,
+                        "method": "DELETE"
+                    };
+                    client.request(relationshipDeleteSettings).then(function(response){
+                        client.invoke('notify','customer unlinked from order! farewell!');
+
+                        //reload window once relationship has been deleted to update list
+                        window.location.reload();
+                    }).catch(function(error){
+                        //Display error message (see function below)
+                        showCoError(error,'#wizard_container');
+                    });
+                });
+            }).catch(function(error){
+            //Display error message (see function below)
+            showCoError(error,'#order_list');
+            });
+        };
+
+        //Function - pop modal open with object details
+        function popModal(id) {
+            client.invoke('instances.create', {
+                location: 'modal',
+                url: 'assets/wizard_modal.html#' + id,
+                size: {
+                width: '50vw',
+                height: '70vh'
+                }
+            }).then(function(modalContext) {
+                // The modal is on screen now
+                var modalClient = client.instance(modalContext['instances.create'][0].instanceGuid);
+                modalClient.on('modal.close', function() {
+                // The modal has been closed
+                window.location.reload();
+                });
+            });
+        };
+
+        //Function - Error handling for Custom Objects API
+        function showCoError(error) {
+            var error = error.responseJSON.errors[0]
+            var error_status = error.status;
+            var error_detail = error.detail;
+            var error_placement = arguments[1];
+            console.log(error);
+            switch(error_detail) {
+                case 'The given Resource Type does not exist':
+                case 'The given Relationship Type does not exist':
+                case 'Not Found':
+                case 'RelationshipType not found':
+                case 'Could not find relationship type':
+                    error_message = error_detail + '. <a href="https://github.com/zendesk/order-management#getting-started" class="alert-link" target="_blank">Check out the documentation</a> and make sure you have created the right object & relationship types.';
+                break;
+                case 'External Id is already in use for the Resource Type key: sku':
+                case 'External Id is already in use for the Resource Type key: order':
+                    error_message = 'The order/product name must be unique!';
+                break;
+                default:
+                    error_message = 'Error ' + error_status + ': ' + error_detail + '.';
+                };
+            $(error_placement).prepend('<div class="alert alert-danger fade show" role="alert">' + error_message + '</div>');
+        };
+
+        </script>
+    </body>
+</html>

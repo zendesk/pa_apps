@@ -1,0 +1,168 @@
+<html>
+    <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="src/styles.css" type="text/css">
+    <link rel="stylesheet" href="src/architecture-main.css" type="text/css">
+    <script src="src/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="src/list.min.js" type="text/javascript"></script>
+    <style>
+        @font-face{
+        font-family:'Font Awesome 5 Free';
+        font-style:normal;font-weight:900;
+        src:url(fonts/fa-solid-900.eot);
+        src:url(fonts/fa-solid-900.eot?#iefix) format("embedded-opentype"),url(fonts/fa-solid-900.woff2) format("woff2"),url(fonts/fa-solid-900.woff) format("woff"),url(fonts/fa-solid-900.ttf) format("truetype"),url(fonts/fa-solid-900.svg#fontawesome) format("svg")
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container-fluid" id="wizard_modal_container">
+            <div class="row">
+                <div class="col-md-12" id="sku_list"></div>
+            </div>
+        </div>
+
+        <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+        <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+        <script>
+        //Initialise the Zendesk JavaScript API client
+        var client = ZAFClient.init();
+
+        //Retrieve current object id from url hash and initiate data retrieval (see function below)
+        client.on('app.registered', init);
+
+        //Create list of available skus (see function below)
+        createList();
+
+        //Load script once object list is created
+        $.when(createList).done(function(){
+            $.getScript('src/architecture-main.js', function(){
+            });
+        });
+        
+        /* FUNCTIONS */
+
+        //Function - Retrieve current object id from url hash
+        function init(){
+            //Get url parameters
+            var param = window.location.hash;
+            id = param.replace('#','');
+        };
+
+        //Function - Create list of existing SKUs/Orders
+        function createList(){
+
+            //Get list of existing SKUs
+            var ListSettings = {"url": "/api/custom_resources/resources?type=sku&order=desc"};
+            client.request(ListSettings).then(function(response){
+                var sku = response.data;
+                var sku_list = '';
+                var sku_attribute_keys = '';
+
+                if (sku.length === 0){
+                    $('#sku_list').prepend('<div class="alert alert-warning fade show" role="alert">No product found. You need to create a product first! </div>');
+                } else {
+
+                    //Loop through each sku keys and create first line of the table
+                    for (var key in sku[0].attributes){
+                            sku_attribute_keys += '<th><span class="label">' + key.replace(/_/g, ' ') + '</span></th>';
+                        };
+
+                    //Loop through each sku and create list (see function below)
+                    for (var i = 0; i < sku.length; i++){
+                        var sku_id = sku[i].id;
+                        var sku_attributes = sku[i].attributes;
+                        var sku_attribute_list = '';
+
+                        //Loop through object attributes for each objects
+                        for(var key in sku_attributes){
+
+                            //Check if any attribute is an image (extension jpg, jpeg, png, gif)
+                            var extension = sku_attributes[key].substr( (sku_attributes[key].lastIndexOf('.') +1) );
+                            switch(extension) {
+                            case 'jpg':
+                            case 'jpeg':
+                            case 'png':
+                            case 'gif':
+                                
+                                //If attribute is image, render as img
+                                sku_attribute_list += '<td class="order_detail_attribute"><img src="img/' + sku_attributes[key] + '" height="40px"/></td>';
+                            break;
+                            default:
+                                
+                                //If attribute is not an image, render as text
+                                sku_attribute_list += '<td class="order_detail_attribute">' + sku_attributes[key] + '</td>';
+                            };
+                        };
+
+                        //Add all rows in object_list
+                        sku_list += '<tr>' + sku_attribute_list + '<td class="sku_link_container"><button class="mr-2 btn-transition btn btn-outline-success sku_link" id="' + sku_id + '">link</button></td></tr>';
+                    };
+
+                    //Add to DOM
+                    $('#sku_list').prepend('<div class="sku_header mb-2"><h5 class="card-title">Skus</h5></div><div class="table-responsive" id="sku_list_container"><table class="mb-0 table"><thead><tr>' + sku_attribute_keys + '</tr></thead><tbody>' + sku_list + '</tbody></table></div>');
+
+                    //Create relationship between sku & order when link button is clicked
+                    $('.sku_link').click(function(){
+                        var sku_id = $(this).attr('id');
+                        
+                        var linkSkuSettings = {
+                            "url":"/api/custom_resources/relationships",
+                            "method": "POST",
+                            "headers": {
+                                "content-type": "application/json"
+                            },
+                            "processData": false,
+                            "data": '{\"data\":{\"relationship_type\": \"contains\",\"source\": \"' + id + '\",\"target\": \"'+ sku_id +'\"}}'
+                        };
+
+                        //Show notification when relationship is created and then fade
+                        client.request(linkSkuSettings).then(function(response){
+                            /*$('<div class="col-md-12"><div class="alert alert-success fade show" role="alert">Sku linked to order!</div></div>').insertBefore('#sku_list').delay(2000).fadeOut(function() {
+                                $(this).remove(); 
+                            });*/
+                            client.invoke('notify','product linked! Yay!');
+                        }).catch(function(error){
+
+                            //Display error message (see function below)
+                            showCoError(error,'#wizard_modal_container');
+                        });
+                    });
+                };
+            }).catch(function(error){
+
+                //Display error message (see function below)
+                showCoError(error, '#wizard_modal_container');
+            });
+            };
+
+            //Function - Error handling for Custom Objects API
+            function showCoError(error) {
+                var error = error.responseJSON.errors[0]
+                var error_status = error.status;
+                var error_detail = error.detail;
+                var error_placement = arguments[1];
+                console.log(error);
+                switch(error_detail) {
+                    case 'The given Resource Type does not exist':
+                    case 'The given Relationship Type does not exist':
+                    case 'Not Found':
+                    case 'RelationshipType not found':
+                    case 'Could not find relationship type':
+                        error_message = error_detail + '. <a href="https://github.com/zendesk/order-management#getting-started" class="alert-link" target="_blank">Check out the documentation</a> and make sure you have created the right object & relationship types.';
+                    break;
+                    case 'External Id is already in use for the Resource Type key: sku':
+                    case 'External Id is already in use for the Resource Type key: order':
+                        error_message = 'The order/product name must be unique!';
+                    break;
+                    case 'An identical relationship already exists':
+                        error_message = 'This product is already linked to this order. Choose another one.'
+                    break;
+                    default:
+                        error_message = 'Error ' + error_status + ': ' + error_detail + '.';
+                    };
+                $(error_placement).prepend('<div class="alert alert-danger fade show" role="alert">' + error_message + '</div>');
+            };
+
+        </script>
+    </body>
+</html>

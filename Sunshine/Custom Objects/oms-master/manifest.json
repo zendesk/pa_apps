@@ -1,0 +1,18 @@
+{
+  "name": "Order Management",
+  "author": {
+    "name": "Romain Rothier",
+    "email": "rrothier@zendesk.com",
+    "url": ""
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "location": {
+    "support": {
+      "ticket_sidebar": "assets/iframe.html",
+      "nav_bar": "assets/wizard.html"
+    }
+  },
+  "version": "1.0",
+  "frameworkVersion": "2.0"
+}
