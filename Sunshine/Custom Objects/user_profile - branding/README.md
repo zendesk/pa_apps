@@ -8,6 +8,10 @@ Zendesk Support sidebar app. Displays all of the profiles for a given user from 
 * User profiles grouped by source and type
 * Attributes for each profile
 * Supports nested objects and arrays of primitive types
+* *NEW* Added brand filtering:
+    * If the application parameter "Show all User Profiles for Default Brand" is checked - Will show all profiles when the default brand is selected otherwise only shows the profiles whose "Brand" matches the current ticket's Brand.
+    * If the application parameter "Show all User Profiles for Default Brand" isn't checked - Only shows the profiles whose "Brand" matches the current ticket's Brand.
+    * Note the Profile must have a attribute of "Brand", or it will treat the profile has not matching any brand
 
 Please submit bug reports to [the ICARUS JIRA board](https://zendesk.atlassian.net/jira/software/projects/ICARUS/boards/1415). Pull requests are welcome.
 
