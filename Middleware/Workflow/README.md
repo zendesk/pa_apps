@@ -93,10 +93,10 @@ Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
     3. Both get you to the same place, just two different ways of going the same thing.
 
 #### 4. Commit changes to github
-1. Type git status - to get the status of your changes
-2. Type git add . - add all the changed files
-4. Type git commit -m "Your comment" - commit changes with comment
-5. Type git push origin master - push changes to remote github repo
+1. Type ```git status``` - to get the status of your changes
+2. Type ```git add .``` - add all the changed files
+4. Type ```git commit -m "Your comment"``` - commit changes with comment
+5. Type ```git push origin master``` - push changes to remote github repo
 
 
 ### Additional Resources
