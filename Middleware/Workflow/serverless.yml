@@ -1,0 +1,21 @@
+# Uses serverless framework - https://serverless.com/framework/docs/providers/aws/guide/intro/
+service: Workflow 
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: ${opt:region, 'us-west-2'} # Overwrite the default region used. Default is now us-west-2 (Oregon)
+
+functions:
+  callIntegration:
+    handler: handler.callIntegration
+    description: MVP function to do Sunshine Profiles -> Connect Users
+    memorySize: 512
+    timeout: 10
+    events:
+      - schedule: rate(1 minute)
+    environment:
+      apiToken: ${ssm:/Workflow/dev/apiToken}
+      subDomain: ${ssm:/Workflow/dev/subdomain}
+      user: ${ssm:/Workflow/dev/user}
+      connectPrivateKey: ${ssm:/Workflow/dev/connectPrivateKey}
