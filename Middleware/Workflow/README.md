@@ -74,24 +74,29 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
 7. Have your github account [sponsored](https://zendeskit.zendesk.com/hc/en-us/articles/360006728793)
 
 #### 1. Clone Repo
-1. Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
+Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
     1. [Instructions](https://help.github.com/en/articles/cloning-a-repository) - how to Clone a github repo
     2. Find a location on your local machine then open (on MAC) terminal and type the following command ```git clone https://github.com/zendesk/pa_apps.git```
-    3. 
-n object type is a blueprint for creating object records of the same type. You can create the types via API or through the Zendesk UI (Admin > Manage > Custom Objects). You can specify any number of properties for your object. All properties have to be of type **string**, and make sure to **use the same key as defined below**:
-
-1. Create object type with key = **order** ([example](https://cl.ly/1187aed75e4e))
-2. Create object type with key = **sku** ([example](https://cl.ly/36c3923e2d4f))
+    3. Change to the Middleware/Workflow directory which is where the Workflow MVP lives
 
 #### 2. Build and Deploy Workflow tool
-A relationship type defines a relationship between object records (1-to-1, 1-to-many, many-to-many).
+1. Initialize - Within the PA_apps/Middleware/Workflow directory type the following command ```npm install``` this will initialize the folder and download any required dependancies
+2. Deploy - now type ```serverless deploy -r us-west-2 -v --aws-s3-accelerate``` this will deploy the Serverless applicatoin using cloudformation, if everything is installed correctly this should succeed without errors.
+    1. If there are errors go to your AWS console and then to cloudformation, find the Workflow-dev stack, and then click on the events tab, find the earilest error, this should indicate what the problem is, I suggest googling this error as a start, most likely there will be a post on a blog with more info on how to troubleshoot it.
 
-1. Create a 1-to-many relationship type with key = **ordered** / source = zen:user / type = 1:many / target = order ([example](https://cl.ly/1ab0faba7727)).
-2. Create a many-to-many relationship type by creating 2x 1-to-many relationship types:
-    1. Relationship type with key = **contains** / source = order / type = 1:many / target = sku ([example](https://cl.ly/6be6d7c32ef4)).
-    2. Relationship type key = **used_in** / source = sku / type = 1:many / target = order ([example](https://cl.ly/51d7586081ba)).
+#### 3. Verify Working / Testing / Changes
+1. To test changes type ```serverless invoke local -f callIntegration``` this will invoke the lambda function locally.
+2. During testing I suggest opening a new terminal and tailing the logs - ```serverless logs -f callIntegration -t"```
+3. Another option is to go into CloudWatch and view the logs, there are two ways to do this:
+    1. Go into Cloudwatch, then logs tab, find theaws/lambda/Workflow-dev-callIntegratiion log group, then the most recent log stream
+    2. Go into Lambda find the Workflow-dev-callIntegration - function, then click the monitoring tab, (shows some nice graphs) then click View logs in Cloudwatch.
+    3. Both get you to the same place, just two different ways of going the same thing.
 
-#### 3. Verify Working
+#### 4. Commit changes to github
+1. Type git status - to get the status of your changes
+2. Type git add . - add all the changed files
+4. Type git commit -m "Your comment" - commit changes with comment
+5. Type git push origin master - push changes to remote github repo
 
 
 ### Additional Resources
