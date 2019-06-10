@@ -75,9 +75,9 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
 
 #### 1. Clone Repo
 Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
-    1. [Instructions](https://help.github.com/en/articles/cloning-a-repository) - how to Clone a github repo
-    2. Find a location on your local machine then open (on MAC) terminal and type the following command ```git clone https://github.com/zendesk/pa_apps.git```
-    3. Change to the Middleware/Workflow directory which is where the Workflow MVP lives
+1. [Instructions](https://help.github.com/en/articles/cloning-a-repository) - how to Clone a github repo
+2. Find a location on your local machine then open (on MAC) terminal and type the following command ```git clone https://github.com/zendesk/pa_apps.git```
+3. Change to the Middleware/Workflow directory which is where the Workflow MVP lives
 
 #### 2. Build and Deploy Workflow tool
 1. Initialize - Within the PA_apps/Middleware/Workflow directory type the following command ```npm install``` this will initialize the folder and download any required dependancies
