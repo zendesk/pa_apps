@@ -1,5 +1,0 @@
-aws ssm put-parameter --name "/Workflow/dev/subdomain" --value "z3n-dezzed" --type String --tier Standard 
-aws ssm put-parameter --name "/Workflow/dev/user" --value "ewillis@zendesk.com" --type String 
-aws ssm put-parameter --name "/Workflow/dev/apiToken" --value "evmZUsrgX2LNlOgHLEXSPC8jltSximfVw5sdpTT6" --type String 
-aws ssm put-parameter --name "/Workflow/dev/connectPrivateKey" --value "3ad9abff7d1220678693c10367b107ab" --type String 
-aws ssm describe-parameters --filters "Key=Name,Value=/Workflow/dev/"
