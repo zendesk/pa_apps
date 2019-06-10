@@ -108,5 +108,6 @@ Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
 ### Additional Resources
 1. [Git - Getting Started](https://git-scm.com/book/en/v1/Getting-Started)
 2. [Serverless 101](https://www.youtube.com/playlist?list=PLGyRwGktEFqedFrqKLIzmUXlsiQ4tbdyo)
+3. [Serverless Framework - Quickstart](https://serverless.com/framework/docs/providers/aws/guide/quick-start/)
 3. [Node.js Getting Started](https://nodejs.org/en/docs/guides/getting-started-guide/)
 
