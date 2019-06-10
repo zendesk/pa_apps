@@ -20,7 +20,7 @@ Workflow management MVP - currently:
 * Have AWS Cli Installed
 * Have Serverless framework installed
 * Have appropiate secrets setup in AWS System Manager Parameter Store
-* Have Git installed
+* Have Git installed and have a Zendesk Sponsored Github account
 
 ### Getting started
 Please have your own Zendesk instance setup with Custom Objects, Profiles and Events.  We will start from this point.
