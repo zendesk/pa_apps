@@ -46,16 +46,16 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
     1. Zendesk Subdomain
         1. Note your Zendesk's subdomain        
         2. Type the following command ```aws ssm put-parameter --name "/Workflow/dev/subdomain" --value "[YOUR SUBDOMAIN]" --type String```
-        3. Make sure to replace [YOUR SUBDOMAIN] with your subdomain; ex if your subdomain is apple ```aws ssm put-parameter --name "/Workflow/dev/subdomain" --value "apple" --type String```
+        3. Make sure to replace [YOUR SUBDOMAIN] with your subdomain; ex if your subdomain is "apple" ```aws ssm put-parameter --name "/Workflow/dev/subdomain" --value "apple" --type String```
         4. If it succeeeds it should return { "Version": 1}, if you get an error [check the command syntax](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-cli.html)
     2. Zendesk user
         1. Note your Zendesk user (should have admin rights)
         2. Type the following command ```aws ssm put-parameter --name "/Workflow/dev/user" --value "[YOUR EMAIL]" --type String ```
-        3. Make sure to replace [YOUR EMAIL] with your email address of your admin; ex if your email is test@example.com ```aws ssm put-parameter --name "/Workflow/dev/subdomain" --value "test@example.com" --type String```
+        3. Make sure to replace [YOUR EMAIL] with your email address of your admin; ex if your email is "test@example.com" ```aws ssm put-parameter --name "/Workflow/dev/subdomain" --value "test@example.com" --type String```
         4. If it succeeeds it should return { "Version": 1}, if you get an error [check the command syntax](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-cli.html)
     3. Create a token for access to your Zendesk Instance
         1. Go to your domain's Setup/Channels/API page https://YourDomain.zendesk.com/agent/admin/api/settings - Replace YourDomain!
-        2. Make sure token access is enabled, if not enable it ![Alt text](/screenshots/token_access.jpg?raw=true "Turn on Token Access")
+        2. Make sure token access is enabled, if not enable it ![Alt text](token_access.png?raw=true "Turn on Token Access")
         3. Create a Token, make sure to copy it for later, as once you close out it will not be shown again
         4. Type the following command ```aws ssm put-parameter --name "/Workflow/dev/apiToken" --value "[YOUR TOKEN]" --type String```
         5. Make sure to replace [YOUR TOKEN] with the token you generated in #2 above; ex if your token is 12345 ```aws ssm put-parameter --name "/Workflow/dev/apiToken" --value "12345" --type String```
