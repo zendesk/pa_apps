@@ -82,7 +82,13 @@ Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
 #### 2. Build and Deploy Workflow tool
 1. Initialize - Within the PA_apps/Middleware/Workflow directory type the following command ```npm install``` this will initialize the folder and download any required dependancies
 2. Deploy - now type ```serverless deploy -r us-west-2 -v --aws-s3-accelerate``` this will deploy the Serverless applicatoin using cloudformation, if everything is installed correctly this should succeed without errors.
-    1. If there are errors go to your AWS console and then to cloudformation, find the Workflow-dev stack, and then click on the events tab, find the earilest error, this should indicate what the problem is, I suggest googling this error as a start, most likely there will be a post on a blog with more info on how to troubleshoot it.
+3. If there are errors:
+    1. Go to your AWS console 
+    2. Go to the cloudformation service
+    3. Find the Workflow-dev stack
+    4. click on the events tab
+    5. Find the earilest error - this should indicate what the problem is
+    6. I suggest googling this error as a start, most likely there will be a post on a blog with more info on how to troubleshoot it.
 
 #### 3. Verify Working / Testing / Changes
 1. To test changes type ```serverless invoke local -f callIntegration``` this will invoke the lambda function locally.
