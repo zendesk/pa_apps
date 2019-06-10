@@ -20,7 +20,7 @@ Workflow management MVP - currently:
 * Have AWS Cli Installed
 * Have Serverless framework installed
 * Have appropiate secrets setup in AWS System Manager Parameter Store
-* Have Git installed and have a Zendesk Sponsored Github account
+* Have Git installed and member of the Zendesk Github Org
 
 ### Getting started
 Please have your own Zendesk instance setup with Custom Objects, Profiles and Events.  We will start from this point.
@@ -71,7 +71,7 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
         3. If you are having problems seeing the Parameters double check that the aws ssm put-parameter calls were done and did not have errors
 5. [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 6. Create a [Github account](https://github.com/join)
-7. Have your github account [sponsored](https://zendeskit.zendesk.com/hc/en-us/articles/360006728793)
+7. Have your github account become a member of the [Zendesk Org](https://zendeskit.zendesk.com/hc/en-us/articles/360006728793)
 
 #### 1. Clone Repo
 Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
