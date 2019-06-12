@@ -39,8 +39,8 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
         1. You will need a AWS Access Key and Secret Access Key [AWS Docs](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) - save the keys as you will not be shown the secret key again
         2. Run ```aws configure``` - you will need your access keys, make sure to set the default region to 'us-west-2'
 3. [Install Serverless Framework](https://serverless.com/framework/docs/getting-started/)
-    1. Install ```npm install -g serverless```
-    2. Update from previous version ```npm update -g serverless```
+    1. Install ```sudo npm install -g serverless``` - make sure to do a sudo so there is enough permissions
+    2. Update from previous version ```sudo npm update -g serverless```
 3. Mac - open terminal, Windows Commandline
 4. Setup Secrets in AWS System Manager Parameter Store
     1. Zendesk Subdomain
