@@ -103,6 +103,9 @@ Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
 2. Type ```git add .``` - add all the changed files
 4. Type ```git commit -m "Your comment"``` - commit changes with comment
 5. Type ```git push origin master``` - push changes to remote github repo
+6. Type ```git fetch origin``` then ```git pull``` - get latest changes perserving local changes
+   1. Blow away local changes - just delete and clone repo again
+   2. Or ```git fetch origin``` then ```git reset --hard origin/[tag/branch/commit-id usually: master]```
 
 
 ### 5. Seeing Sunshine and Connect User Pages
