@@ -95,7 +95,12 @@ async function getProfiles() {
 }
 
 async function setConnectData(userProfiles) {  
-  console.log("# of user Profiles to sync: " + userProfiles.data.length);  
+  if (userProfiles.data.length === 'undefined' || userProfiles.data.length < 1) {
+    console.log("No Sunshine Users, nothing to do");
+    return;
+  }
+
+  console.log("# of user Profiles to sync: " + userProfiles.data.length); 
 
   var user = {};
   var userAttributes = {};

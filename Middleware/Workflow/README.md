@@ -62,7 +62,7 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
         6. If it succeeeds it should return { "Version": 1}, if you get an error [check the command syntax](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-cli.html)
     4. Get your Connect Private Key
         1. To get your Connect Private Key go to https://YourDomain.zendesk.com/connect/dashboard/dashboard/settings/environments - Replace YourDomain with your actual domain
-        2. On this page retreive the Production or Development private key
+        2. On this page retreive the Production or Development private key (if you have a lot of users recommend using Development)
         3. Type the following command ```aws ssm put-parameter --name "/Workflow/dev/connectPrivateKey" --value "YOUR PRIVATE KEY" --type String```
         4. Make sure to replace [YOUR PRIVATE KEY] with your actual private key; ex if your private key is abcde ```aws ssm put-parameter --name "/Workflow/dev/connectPrivateKey" --value "abcde" --type String```
     5. Verify Parameters were saved
@@ -103,6 +103,14 @@ Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
 2. Type ```git add .``` - add all the changed files
 4. Type ```git commit -m "Your comment"``` - commit changes with comment
 5. Type ```git push origin master``` - push changes to remote github repo
+
+
+### 5. Seeing Sunshine and Connect User Pages
+1. [Sunshine Users](https://yourdomain.zendesk.com/sunshine/people)
+    1. To Enable [Sunshine Viewer] - ask to be turned on in #sunshine-ui-feedback in slack to have the Sunshine UI turned on.  
+    2. Jordon Alviso mayb be able to help with this.  
+    3. Page in question is https://YOURDOMAIN.zendesk.com/sunshine/people
+2. [Connect Users](https://YOURDOMAIN.zendesk.com/connect/dashboard/dashboard/users?page=1) - make sure to log into Connect first to activate if you haven't [here](https://www.zendesk.com/connect/) - click the blue log in to connect about the middle of the page on the right hand side
 
 
 ### Additional Resources
