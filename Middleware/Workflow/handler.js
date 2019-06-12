@@ -35,7 +35,7 @@ module.exports.callIntegration = async (event) => {
   //console.log ("Response: " + JSON.stringify(profiles, null, 2));  
 
   const result = await setConnectData(profiles);
-  //console.log ("Connect Result: " + result);
+  //console.log (`Connect Result: ${result}`);
 
   return {
     statusCode: 200,
@@ -47,7 +47,7 @@ module.exports.callIntegration = async (event) => {
 };
 
 async function httpsRequest(method, {body, ...options}) {
-  //console.log("body:" + body);
+  //console.log(`body: ${body}`);
   //console.log("options: " + JSON.stringify(options, null, 2));
   return new Promise((resolve,reject) => {
       const req = https.request({
