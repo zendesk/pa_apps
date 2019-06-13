@@ -33,6 +33,27 @@ module.exports.callIntegration = async (event) => {
   // Connect to Sunshine API end point get list of profiles
   const profiles = await getProfiles();
   //console.log ("Response: " + JSON.stringify(profiles, null, 2));  
+
+  if (profiles.id) {  // Indicates error message
+    console.log(`callIntegration().getProfiles() - Error: ${profiles.id}: ${profiles.reason}`);
+    if (profiles.id == 1023) { // response for no sunshine profiles {"id": 1023, "reason": "No people for this account"}
+      return {
+        statusCode: 204,
+        body: JSON.stringify({
+          message: 'No Content',
+          input: event,
+        }, null, 2),
+      };  
+    } else { // Some other error
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: 'Internal Server Error',
+          input: event,
+        }, null, 2),
+      };  
+    }    
+  }
   
   const result = await setConnectData(profiles);
   //console.log (`Connect Result: ${result}`);
@@ -95,12 +116,7 @@ async function getProfiles() {
 }
 
 async function setConnectData(userProfiles) {  
-  if (userProfiles.id == 23) {  // Response for no sunshine profiles {"id": 1023, "reason": "No people for this account"}
-    console.log("No Sunshine Profiles, nothing to do");
-    return;
-  }
-
-  console.log("# of user Profiles to sync: " + userProfiles.data.length); 
+   console.log("# of user Profiles to sync: " + userProfiles.data.length); 
 
   var user = {};
   var userAttributes = {};

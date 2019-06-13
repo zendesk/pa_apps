@@ -41,8 +41,8 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
 3. [Install Serverless Framework](https://serverless.com/framework/docs/getting-started/)
     1. Install ```sudo npm install -g serverless``` - make sure to do a sudo so there is enough permissions
     2. Update from previous version ```sudo npm update -g serverless```
-3. Mac - open terminal, Windows Commandline
-4. Setup Secrets in AWS System Manager Parameter Store
+4. Mac - open terminal, Windows Commandline
+5. Setup Secrets in AWS System Manager Parameter Store
     1. Zendesk Subdomain
         1. Note your Zendesk's subdomain        
         2. Type the following command ```aws ssm put-parameter --name "/Workflow/dev/subdomain" --value "[YOUR SUBDOMAIN]" --type String```
@@ -69,9 +69,9 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
         1. Using the command line ```aws ssm describe-parameters --filters "Key=Name,Value=/Workflow/dev/"```
         2. Using the [AWS Console](https://us-west-2.console.aws.amazon.com/systems-manager/parameters?region=us-west-2) 
         3. If you are having problems seeing the Parameters double check that the aws ssm put-parameter calls were done and did not have errors
-5. [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-6. Create a [Github account](https://github.com/join)
-7. Have your github account become a member of the [Zendesk Org](https://zendeskit.zendesk.com/hc/en-us/articles/360006728793)
+6. [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+7. Create a [Github account](https://github.com/join)
+8. Have your github account become a member of the [Zendesk Org](https://zendeskit.zendesk.com/hc/en-us/articles/360006728793)
 
 #### 1. Clone Repo
 Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
@@ -107,9 +107,10 @@ Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
    1. Blow away local changes - just delete and clone repo again
    2. Or ```git fetch origin``` then ```git reset --hard origin/[tag/branch/commit-id usually: master]```
 
-### 5
+### 5. Insert Sunshine Profile Data
+1. TBD - Will use Merhzad's and Leroy's Postman collection - work in progress
 
-### 5. Seeing Sunshine and Connect User Pages
+### 6. Seeing Sunshine and Connect User Pages
 1. [Sunshine Users](https://yourdomain.zendesk.com/sunshine/people)
     1. To Enable [Sunshine Viewer] - ask to be turned on in #sunshine-ui-feedback in slack to have the Sunshine UI turned on.  
     2. Jordon Alviso mayb be able to help with this.  
