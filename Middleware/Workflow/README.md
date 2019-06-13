@@ -107,6 +107,7 @@ Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
    1. Blow away local changes - just delete and clone repo again
    2. Or ```git fetch origin``` then ```git reset --hard origin/[tag/branch/commit-id usually: master]```
 
+### 5
 
 ### 5. Seeing Sunshine and Connect User Pages
 1. [Sunshine Users](https://yourdomain.zendesk.com/sunshine/people)

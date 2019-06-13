@@ -33,7 +33,7 @@ module.exports.callIntegration = async (event) => {
   // Connect to Sunshine API end point get list of profiles
   const profiles = await getProfiles();
   //console.log ("Response: " + JSON.stringify(profiles, null, 2));  
-
+  
   const result = await setConnectData(profiles);
   //console.log (`Connect Result: ${result}`);
 
@@ -95,8 +95,8 @@ async function getProfiles() {
 }
 
 async function setConnectData(userProfiles) {  
-  if (userProfiles.data.length === null) { // || userProfiles.data.length < 1) {
-    console.log("No Sunshine Users, nothing to do");
+  if (userProfiles.id == 23) {  // Response for no sunshine profiles {"id": 1023, "reason": "No people for this account"}
+    console.log("No Sunshine Profiles, nothing to do");
     return;
   }
 
