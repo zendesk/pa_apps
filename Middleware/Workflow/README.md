@@ -41,8 +41,8 @@ Please have your own Zendesk instance setup with Custom Objects, Profiles and Ev
 3. [Install Serverless Framework](https://serverless.com/framework/docs/getting-started/)
     1. Install ```sudo npm install -g serverless``` - make sure to do a sudo so there is enough permissions
     2. Update from previous version ```sudo npm update -g serverless```
-3. Mac - open terminal, Windows Commandline
-4. Setup Secrets in AWS System Manager Parameter Store
+4. Mac - open terminal, Windows Commandline
+5. Setup Secrets in AWS System Manager Parameter Store
     1. Zendesk Subdomain
         1. Note your Zendesk's subdomain        
         2. Type the following command ```aws ssm put-parameter --name "/Workflow/dev/subdomain" --value "[YOUR SUBDOMAIN]" --type String```
