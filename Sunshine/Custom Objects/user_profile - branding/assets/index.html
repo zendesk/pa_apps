@@ -144,13 +144,18 @@
     const capitalize = str => str.slice(0, 1).toUpperCase() + str.slice(1)
 
    
-    const renderProfile = ({ source, type, attributes }, isLastProfile) =>
+    const renderProfile = ({ source, type, attributes, photo_url }, isLastProfile) =>
       getAvatarUrl().then(avatarUrl => {
         // create profile element
         const toId = `${source}-${type}`;
 
+        // add profile photo_url if exists
+        var headerImage = '';
+        if (photo_url) 
+          headerImage = '<img src="' + photo_url + '" alt="profile image" height="20" width="20">&nbsp;';
+        
         // add profile header
-        const headerContent = [capitalize(source), type, 'profile'].join(' ')       
+        const headerContent = headerImage + [capitalize(source), type, 'profile'].join(' ');
 
         // Filter to brand        
         const profileBrand = attributes.Brand;        

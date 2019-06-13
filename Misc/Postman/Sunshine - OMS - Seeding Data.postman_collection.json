@@ -1,0 +1,1905 @@
+{
+	"info": {
+		"_postman_id": "28d0783e-d57f-4191-850b-8ef1ced4eda5",
+		"name": "Sunshine - OMS - Seeding Data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01. Setup",
+			"item": [
+				{
+					"name": "00. Pre-Requisite Check",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b36778cb-14cd-4cdf-8edf-d45e7bc2ba6c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f286a156-8df9-403d-a869-2469adf54440",
+								"exec": [
+									" if (responseCode.code !== 200) {",
+									"     postman.setNextRequest(null);",
+									" }",
+									" ",
+									" pm.test(\"Pre-Requiste Check. Status Needs to be 200.\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/types",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "01. Seed Sunshine Profiles",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"profiles\": [\n    {\n      \"source\": \"OMS\",\n      \"identifiers\": {\n        \"email\": \"{{enduser_email}}\"\n      },\n      \"attributes\": {\n        \"favorite_color\": \"blue\",\n        \"lifetimevalue\": \"$5000\",\n        \"numberoforders\": \"300\"\n      }\n    },\n    {\n      \"source\": \"Loyalty\",\n      \"identifiers\": {\n        \"email\": \"{{enduser_email}}\"\n      },\n      \"attributes\": {\n        \"Membertype\": \"Gold\",\n        \"TotalPoints\": \"30,000\",\n        \"Membersince\": \"2012\",\n        \"Brand\": \"Zendesk\"\n      }\n    },\n    {\n      \"source\": \"support\",\n      \"identifiers\": {\n        \"user_id\": \"{{enduser_id}}\"\n      },\n      \"attributes\": {\n        \"Status\": \"VIP\",\n        \"NumberofIssues\": \"30\",\n        \"Brand\": \"Shoes\"\n      }\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/profile/bulk",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"profile",
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "02. Attach Profiles",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profiles\": [\n        {\n            \"source\": \"OMS\",\n            \"identifiers\": {\n                \"email\": \"{{enduser_email}}\"\n            }\n        },\n        {\n            \"source\": \"Loyalty\",\n            \"identifiers\": {\n                \"email\": \"{{enduser_email}}\"\n            }\n        }\n    ],\n    \"target_person\": {\n        \"identifier\": \"support:user_id:{{enduser_id}}\"\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/profiles/attach",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"profiles",
+								"attach"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "03. User Events - Order #1 Placed",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profile\": {\n        \"source\": \"support\",\n        \"identifiers\": {\n            \"user_id\": \"{{enduser_id}}\"\n        }\n    },\n    \"event\": {\n        \"source\": \"order_0001\",\n        \"type\": \"order\",\n        \"description\": \"🛒Order #0001 placed\",\n        \"properties\": {\n            \"Order ID\": \"0001\",\n            \"Order Type\": \"Home delivery\",\n            \"Total\": \"$250\",\n            \"Payment Type\": \"Credit Card\",\n            \"Payment Card\": \"**** **** **** 5623\",\n            \"Order status\": \"Being prepared\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/track",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"track"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "04. User Events - Order #2 Placed ",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profile\": {\n        \"source\": \"support\",\n        \"identifiers\": {\n            \"user_id\": \"{{enduser_id}}\"\n        }\n    },\n    \"event\": {\n        \"source\": \"order_0002\",\n        \"type\": \"order\",\n        \"description\": \"🛒Order #0002 placed\",\n        \"properties\": {\n            \"Order ID\": \"0001\",\n            \"Order Type\": \"Home delivery\",\n            \"Total\": \"$250\",\n            \"Payment Type\": \"Credit Card\",\n            \"Payment Card\": \"**** **** **** 5623\",\n            \"Order status\": \"Being prepared\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/track",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"track"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "05. User Events - Order #1 Up for Delivery",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profile\": {\n        \"source\": \"support\",\n        \"identifiers\": {\n            \"user_id\": \"{{enduser_id}}\"\n        }\n    },\n    \"event\": {\n        \"source\": \"order_0001\",\n        \"type\": \"order\",\n        \"created_at\": \"2019-02-08T10:33:21Z\",\n        \"description\": \"📦Order #0001 up for delivery\",\n        \"properties\": {\n            \"Order ID\": \"0001\",\n            \"Order Type\": \"Home delivery\",\n            \"Total\": \"$250\",\n            \"Payment Type\": \"Credit Card\",\n            \"Payment Card\": \"**** **** **** 5623\",\n            \"Order status\": \"Up for delivery\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/track",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"track"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "06. User Events - Order #2 Up for Delivery",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profile\": {\n        \"source\": \"support\",\n        \"identifiers\": {\n            \"user_id\": \"{{enduser_id}}\"\n        }\n    },\n    \"event\": {\n        \"source\": \"order_0002\",\n        \"type\": \"order\",\n        \"created_at\": \"2019-02-08T10:33:21Z\",\n        \"description\": \"📦Order #0002 up for delivery\",\n        \"properties\": {\n            \"Order ID\": \"0001\",\n            \"Order Type\": \"Home delivery\",\n            \"Total\": \"$250\",\n            \"Payment Type\": \"Credit Card\",\n            \"Payment Card\": \"**** **** **** 5623\",\n            \"Order status\": \"Up for delivery\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/track",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"track"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "07. User Events - Order #1 Delivered",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profile\": {\n        \"source\": \"support\",\n        \"identifiers\": {\n            \"user_id\": \"{{enduser_id}}\"\n        }\n    },\n    \"event\": {\n        \"source\": \"order_0001\",\n        \"type\": \"order\",\n        \"created_at\": \"2019-02-08T16:12:03Z\",\n        \"description\": \"✅Order #0001 delivered\",\n        \"properties\": {\n            \"Order ID\": \"0001\",\n            \"Order Type\": \"Home delivery\",\n            \"Total\": \"$250\",\n            \"Payment Type\": \"Credit Card\",\n            \"Payment Card\": \"**** **** **** 5623\",\n            \"Order status\": \"Delivered\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/track",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"track"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "08. User Events - Order #2 Delivered",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profile\": {\n        \"source\": \"support\",\n        \"identifiers\": {\n            \"user_id\": \"{{enduser_id}}\"\n        }\n    },\n    \"event\": {\n        \"source\": \"order_0002\",\n        \"type\": \"order\",\n        \"created_at\": \"2019-02-08T16:12:03Z\",\n        \"description\": \"✅Order #0002 delivered\",\n        \"properties\": {\n            \"Order ID\": \"0001\",\n            \"Order Type\": \"Home delivery\",\n            \"Total\": \"$250\",\n            \"Payment Type\": \"Credit Card\",\n            \"Payment Card\": \"**** **** **** 5623\",\n            \"Order status\": \"Delivered\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/track",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"track"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "09. Object Type - Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8a49f00d-ea1d-4582-a4cb-1eb494575415",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"key\": \"{{object_type_1}}\",\n    \"schema\": {\n      \"properties\": {\n        \"status\": {\n          \"type\": \"string\"\n        },\n        \"total\": {\n          \"type\": \"string\"\n        },\n        \"payment_type\": {\n          \"type\": \"string\"\n        },\n        \"shipping_address\": {\n          \"type\": \"string\"\n        },\n        \"billing_address\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/types",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "10. Object Type - SKU",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"key\": \"{{object_type_2}}\",\n    \"schema\": {\n      \"properties\": {\n        \"name\": {\n          \"type\": \"string\"\n        },\n        \"description\": {\n          \"type\": \"string\"\n        },\n        \"image\": {\n          \"type\": \"string\"\n        },\n        \"size\": {\n          \"type\": \"string\"\n        },\n        \"color\": {\n          \"type\": \"string\"\n        },\n        \"price\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/types",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "11. Relationship Type - Ordered",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cbeaaab6-bdb2-4453-b54f-42b5e47cbdc0",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"relationshiptype1_key\", jsonData.data.key);  ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"key\": \"ordered\",\n    \"source\": \"zen:user\",\n    \"target\": [\n      \"{{object_type_1}}\"\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/types",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "12. Relationship Type - Contains",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f020db98-95aa-4d06-8bdf-e3b721b433ba",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"relationshiptype2_key\", jsonData.data.key);  ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"key\": \"contains\",\n    \"source\": \"{{object_type_1}}\",\n    \"target\": [\n      \"{{object_type_2}}\"\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/types",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "13. Relationship Type - Used In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7fc2583f-0f30-4a4a-838e-c031dc46abb2",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"relationshiptype3_key\", jsonData.data.key);  ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"key\": \"used_in\",\n    \"source\": \"{{object_type_2}}\",\n    \"target\": [\n      \"{{object_type_1}}\"\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/types",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "14. Relationship Type - Delivered By",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0c315f03-b82b-46a4-bd1f-40fb203a1b52",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"relationshiptype4_key\", jsonData.data.key);  ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"key\": \"delivered_by\",\n    \"source\": [\n      \"{{object_type_1}}\"\n    ],\n    \"target\": \"zen:organization\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/types",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "15. Object Record - Order #1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d06c9983-af30-49da-8a1e-1ae3917378e0",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"order1_id\", jsonData.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"external_id\": \"order_0001\",\n        \"type\": \"{{object_type_1}}\",\n        \"attributes\": {\n            \"status\": \"completed\",\n            \"total\": \"$530\",\n            \"payment_type\": \"credit card\",\n            \"shipping_address\": \"1019 Market St, San Francisco, CA 94103\",\n            \"billing_address\": \"989 Market St, San Francisco, CA 94103\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/records",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "16. Object Record - Order #2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "76d8b487-d2e4-41e7-9a5b-98d91edcb8f2",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"order2_id\", jsonData.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"external_id\": \"order_0002\",\n        \"type\": \"{{object_type_1}}\",\n        \"attributes\": {\n            \"status\": \"pending\",\n            \"total\": \"$250\",\n            \"payment_type\": \"credit card\",\n            \"shipping_address\": \"201 Main St, San Francisco, CA 94103\",\n            \"billing_address\": \"989 Market St, San Francisco, CA 94103\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/records",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "17. Object Record - SKU #1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c7caf5b6-bf88-426b-8cb3-ce698d69b049",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf680e4f-1fa7-46f3-9deb-2a71340aa702",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"sku1_id\", jsonData.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"external_id\": \"CooperBrn-Brown-42\",\n        \"type\": \"{{object_type_2}}\",\n        \"attributes\": {\n            \"name\": \"Cooper Boots\",\n            \"description\": \"Men's Brother Copper boots\",\n            \"image\": \"CooperBrn-Brown-42.jpg\",\n            \"size\": \"42\",\n            \"color\": \"brown\",\n            \"price\": \"$230\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/records",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "18. Object Record - SKU #2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ac4d7d2f-bbfe-4870-a1d4-0b33fb62a689",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "31364f9e-902f-4e54-afc4-0fa352436f64",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"sku2_id\", jsonData.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"external_id\": \"CooperBrn-Brown-43\",\n        \"type\": \"{{object_type_2}}\",\n        \"attributes\": {\n            \"name\": \"Cooper Boots\",\n            \"description\": \"Men's Brother Copper boots\",\n            \"image\": \"CooperBrn-Brown-42.jpg\",\n            \"size\": \"43\",\n            \"color\": \"brown\",\n            \"price\": \"$230\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/records",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "19. Relationship Record - User to Order #1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d06c9983-af30-49da-8a1e-1ae3917378e0",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"relationshiprecord1_id\", jsonData.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"relationship_type\": \"ordered\",\n    \"source\": \"zen:user:{{enduser_id}}\",\n    \"target\": \"{{order1_id}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "20. Relationship Record - User to Order #2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d06c9983-af30-49da-8a1e-1ae3917378e0",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"relationshiprecord2_id\", jsonData.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"relationship_type\": \"ordered\",\n    \"source\": \"zen:user:{{enduser_id}}\",\n    \"target\": \"{{order2_id}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "21. Relationship Record - Order 1 to SKU",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d06c9983-af30-49da-8a1e-1ae3917378e0",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"relationshiprecord3_id\", jsonData.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"relationship_type\": \"contains\",\n    \"source\": \"{{order1_id}}\",\n    \"target\": \"{{sku1_id}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "22. Relationship Record - Order 2 to SKU 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d06c9983-af30-49da-8a1e-1ae3917378e0",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"postman.setGlobalVariable(\"relationshiprecord4_id\", jsonData.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"relationship_type\": \"contains\",\n    \"source\": \"{{order2_id}}\",\n    \"target\": \"{{sku1_id}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"records"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8df74f97-c52a-46f1-b228-5b5af5c79841",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "45b1a92c-1b4b-4c15-8873-c7262d2aa6ac",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "02. Reset",
+			"item": [
+				{
+					"name": "01. Delete Sunshine Profile - OMS",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									"var enduser_email = pm.variables.get('enduser_email'); ",
+									"var deleteProfileIdentifier = \"OMS:email:\" + enduser_email;",
+									"var encodedIdentifier = encodeURIComponent(deleteProfileIdentifier);",
+									"pm.globals.set(\"deleteProfilesQuery\", encodedIdentifier);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/profile?identifier={{deleteProfilesQuery}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"profile"
+							],
+							"query": [
+								{
+									"key": "identifier",
+									"value": "{{deleteProfilesQuery}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "02. Delete Sunshine Profile - Loyalty",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									"var enduser_email = pm.variables.get('enduser_email'); ",
+									"var deleteProfileIdentifier = \"Loyalty:email:\" + enduser_email",
+									"var encodedIdentifier = encodeURIComponent(deleteProfileIdentifier);",
+									"pm.globals.set(\"deleteProfilesQuery\", encodedIdentifier);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/profile?identifier={{deleteProfilesQuery}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"profile"
+							],
+							"query": [
+								{
+									"key": "identifier",
+									"value": "{{deleteProfilesQuery}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "03. Delete Sunshine Profile - Support",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									"var enduser_id = pm.variables.get('enduser_id'); ",
+									"var deleteProfileIdentifier = \"support:user_id:\" + enduser_id",
+									"var encodedIdentifier = encodeURIComponent(deleteProfileIdentifier);",
+									"pm.globals.set(\"deleteProfilesQuery\", encodedIdentifier);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/profile?identifier={{deleteProfilesQuery}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"profile"
+							],
+							"query": [
+								{
+									"key": "identifier",
+									"value": "{{deleteProfilesQuery}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "04. Delete Object Type #1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/types/{{object_type_1}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"types",
+								"{{object_type_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "05. Delete Object Type #2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/types/{{object_type_2}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"types",
+								"{{object_type_2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "06. Delete Relationship Type #1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/types/{{relationshiptype1_key}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"types",
+								"{{relationshiptype1_key}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "07. Delete Relationship Type #2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/types/{{relationshiptype2_key}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"types",
+								"{{relationshiptype2_key}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "08. Delete Relationship Type #3",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/types/{{relationshiptype3_key}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"types",
+								"{{relationshiptype3_key}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "09. Delete Relationship Type #4",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/types/{{relationshiptype4_key}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"types",
+								"{{relationshiptype4_key}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "10. Delete Object Record #1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/records/{{order1_id}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"records",
+								"{{order1_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "11. Delete Object Record #2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/records/{{order2_id}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"records",
+								"{{order2_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "12. Delete Object Record #3",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/records/{{sku1_id}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"records",
+								"{{sku1_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "13. Delete Object Record #4",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/objects/records/{{sku2_id}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"objects",
+								"records",
+								"{{sku2_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "14. Delete Relationship Record #1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records/{{relationshiprecord1_id}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"records",
+								"{{relationshiprecord1_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "15. Delete Relationship Record #2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records/{{relationshiprecord2_id}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"records",
+								"{{relationshiprecord2_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "16. Delete Relationship Record #3",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records/{{relationshiprecord3_id}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"records",
+								"{{relationshiprecord3_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "17. Delete Relationship Record #4",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8178cf80-49a4-4941-bd05-569dc2d762d7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records/{{relationshiprecord4_id}}",
+							"protocol": "https",
+							"host": [
+								"{{subdomain}}",
+								"zendesk",
+								"com"
+							],
+							"path": [
+								"api",
+								"sunshine",
+								"relationships",
+								"records",
+								"{{relationshiprecord4_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f5b5fad9-d42f-4d4f-bc1a-bd557e8b05fc",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "766744df-1b1e-46ad-b395-881769c99696",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "99. Postman Clean Up",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d06c9983-af30-49da-8a1e-1ae3917378e0",
+						"exec": [
+							"pm.globals.unset(\"order1_id\");",
+							"pm.globals.unset(\"order2_id\");",
+							"pm.globals.unset(\"sku1_id\");",
+							"pm.globals.unset(\"sku2_id\");",
+							"pm.globals.unset(\"relationshiptype1_key\");",
+							"pm.globals.unset(\"relationshiptype2_key\");",
+							"pm.globals.unset(\"relationshiptype3_key\");",
+							"pm.globals.unset(\"relationshiptype4_key\");",
+							"pm.globals.unset(\"relationshiprecord1_id\");",
+							"pm.globals.unset(\"relationshiprecord2_id\");",
+							"pm.globals.unset(\"relationshiprecord3_id\");",
+							"pm.globals.unset(\"relationshiprecord4_id\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"data\": {\n    \"relationship_type\": \"contains\",\n    \"source\": \"{{order2_id}}\",\n    \"target\": \"{{sku1_id}}\"\n  }\n}"
+				},
+				"url": {
+					"raw": "https://{{subdomain}}.zendesk.com/api/sunshine/relationships/records?type=contains",
+					"protocol": "https",
+					"host": [
+						"{{subdomain}}",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"sunshine",
+						"relationships",
+						"records"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "contains"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "0330ej69",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "ewillis@zendesk.com",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "ac9fe82c-7912-471c-9879-e0e7446a5b7c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "27fa146a-e54f-40a1-ac1d-8b381f1b24d1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "5ec15fe6-a6f4-42c2-af9d-9b66fd1e2cc9",
+			"key": "subdomain",
+			"value": "z3n-dezzed",
+			"type": "string"
+		},
+		{
+			"id": "6198c2ac-3772-456c-bfc8-5a62ddc8e90c",
+			"key": "email",
+			"value": "ewillis@zendesk.com",
+			"type": "string"
+		},
+		{
+			"id": "2e5623d8-ec8c-42fb-a129-d5f56b8c9f4e",
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "2e25bedd-f376-4960-a938-819cfdace63b",
+			"key": "enduser_email",
+			"value": "ts547250@gmail.com",
+			"type": "string"
+		},
+		{
+			"id": "29f39d70-e705-4c65-9cf1-0e5c4955be79",
+			"key": "enduser_id",
+			"value": "380629646471",
+			"type": "string"
+		},
+		{
+			"id": "763dc988-0eef-4931-875b-039daec43207",
+			"key": "object_type_1",
+			"value": "order",
+			"type": "string"
+		},
+		{
+			"id": "2ad5efb5-69f4-4bfe-a76b-3049910c30b4",
+			"key": "object_type_2",
+			"value": "sku",
+			"type": "string"
+		}
+	]
+}
