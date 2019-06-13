@@ -95,7 +95,7 @@ async function getProfiles() {
 }
 
 async function setConnectData(userProfiles) {  
-  if (userProfiles.data.length === 'undefined' || userProfiles.data.length < 1) {
+  if (userProfiles.data.length === null) { // || userProfiles.data.length < 1) {
     console.log("No Sunshine Users, nothing to do");
     return;
   }

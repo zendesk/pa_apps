@@ -98,7 +98,7 @@ Clone the [PA_apps](https://github.com/zendesk/pa_apps) repo
     2. Go into Lambda find the Workflow-dev-callIntegration - function, then click the monitoring tab, (shows some nice graphs) then click View logs in Cloudwatch.
     3. Both get you to the same place, just two different ways of going the same thing.
 
-#### 4. Commit changes to github
+#### 4. Commit changes to github / github commands
 1. Type ```git status``` - to get the status of your changes
 2. Type ```git add .``` - add all the changed files
 4. Type ```git commit -m "Your comment"``` - commit changes with comment
