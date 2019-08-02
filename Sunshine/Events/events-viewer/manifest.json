@@ -1,0 +1,30 @@
+{
+  "name": "Events Viewer App",
+  "author": {
+    "name": "Romain Rothier",
+    "email": "rrothier@zendesk.com",
+    "url": ""
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "location": {
+    "support": {
+      "user_sidebar": "assets/iframe.html",
+      "ticket_sidebar": "assets/iframe.html"
+    }
+  },
+  "parameters": [
+    {
+      "name": "event_default_description",
+      "required": true,
+      "secure": false,
+      "default": "System event"
+    },
+    {
+      "name": "keywords",
+      "secure": false
+    }
+  ],
+  "version": "1.0",
+  "frameworkVersion": "2.0"
+}
