@@ -37,9 +37,11 @@ Follow the steps below prior to installing the app. Alternatively, you can use t
 
 
 **1. Create 2 object types for your orders & your products ([example](https://cl.ly/1187aed75e4e))**
+
 An object type is a blueprint for creating object records of the same type. You can create the types via API or through the Zendesk UI (Admin > Manage > Custom Objects). You can specify any number of properties for your object. All properties have to be of type **string**.
 
 **2. Create the relationship types**
+
 A relationship type defines a relationship between object records (1-to-1, 1-to-many, many-to-many).
 
 1. Create a 1-to-many relationship type "ordered" with: source = zen:user / type = 1:many / target = order ([example](https://cl.ly/1ab0faba7727)).
@@ -48,6 +50,7 @@ A relationship type defines a relationship between object records (1-to-1, 1-to-
     2. Relationship type "used_in" with: source = sku / type = 1:many / target = order ([example](https://cl.ly/51d7586081ba)).
 
 **3. Create the object records** 
+
 An Object record is a placeholder for the data you want to diplay. The data it can contain is defined by the object type that you choose. You need to use the API to create object records.
 
 1. Create one or multiple **product** object record(s). ([example](https://cl.ly/5ba80d331f14)).
@@ -56,12 +59,14 @@ An Object record is a placeholder for the data you want to diplay. The data it c
 ℹ️ Image URLs in attribute values will be rendered as images. Also, if "status" is found as part of the attributes, the value of the attribute will be promoted to the header of the card, and different colors will apply depending the value (completed/delivered/done = green, pending/waiting = yellow).
 
 **4. Create the relationship records** 
+
 Relationship records create associations between object records based on a pre-defined relationship type. You need to use the API to create relationship records.
 
 1. Link one or multiple **product** records with an order record using the **contains** relationship type ([example](https://cl.ly/f7a77abf5eb4)).
 2. Link one or multiple **order** records with a Zendesk user using the **ordered** relationship type ([example](https://cl.ly/d31540eb7cfe)).
 
 **5. Create the events related to an order** 
+
 Sunshine Events let you build a timeline of all your customers' interactions from any source. Here they are used to show order related events such as order placed/prepared/delivered. You need to use the API to create events.
 
 1. Create custom events where source = **external_id** of the order you want the event to be linked to. 
