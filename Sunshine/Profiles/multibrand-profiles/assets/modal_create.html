@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="styles.css" type="text/css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="ui main container">
+        <div class="ui header" id="form-header"></div>
+        <div class="ui divider"></div>
+        <form class="ui form" id="profile_form">
+            <div class="required field">
+                <label>Name</label>
+                <div class="ui input">
+                    <input type="text" name="name" placeholder="John Smith" required>
+                </div>
+            </div>
+            <div class="field">
+                <label>Photo URL</label>
+                <div class="ui input">
+                    <input type="text" name="photo_url" placeholder="https://mydomain.com/avatar.jpg">
+                </div>
+            </div>
+            <a class="circular right teal ui tiny icon button" id="labelField" onClick="showLabelField()"><i class="icon plus"></i></a>
+            <div class="ui small action input">
+                <input type="text" placeholder="Label name" id="labelName" style="max-width: 120px">
+                <a class="ui teal icon button" id="addField"><i class="plus icon"></i></a>
+            </div>
+            <div class="ui left pointing label">Add fields</div>
+            <br/><br/>
+            <button class="ui blue button right floated" type="submit">Create</button>
+        </form>
+    </div>
+  <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+  <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  <script>
+    // Initialise Apps framework client. See also:
+    // https://developer.zendesk.com/apps/docs/developer-guide/getting_started
+    var client = ZAFClient.init();
+
+    //Launch function to retrieve ticket context when modal opens
+    client.on('app.registered', init);
+
+    //Get ticket context from parent GUID
+    function init(){
+      let parent_guid = window.location.hash.replace('#','');
+      let pc = getParentClient(parent_guid);
+      pc.get('ticket').then(data =>{
+        console.log(data);
+        ticketRequesterId = data.ticket.requester.id;
+        ticketBrandName = data.ticket.brand.name;
+        ticketBrandNameFormatted = ticketBrandName.replace(/ /g,"_");
+        document.getElementById('form-header').innerHTML = `Create a new ${ticketBrandName} profile`;
+      });
+    };
+
+    //Get parent GUID
+    function getParentClient(parent_guid) {
+      return client.instance(parent_guid)
+    };
+
+    //Show label field to create new field
+    function showLabelField(){
+      $('#labelField').addClass('active').attr('onClick', 'hideLabelField()');
+    };
+
+    //Hide label field
+    function hideLabelField(){
+      $('#labelField').removeClass('active').attr('onClick', 'showLabelField()');
+    };
+
+    //Get input value and add new field and field label
+    $('#addField').click(event =>{
+      let label = $('input#labelName').val();
+      $('#labelField').before(`<div class="field"><label>${label}</label><div class="ui action input"><input type="text" name="${label}" placeholder="${label}"><a class="ui red icon button" id="removeField"><i class="minus icon"></i></a></div></div>`);
+
+      //Empty and hide label name input
+      hideLabelField();
+      $('input#labelName').val('');
+    });
+
+    //Remove field
+    $('form').on('click', '#removeField', function() {
+      $(this).closest('.field').remove();
+    });
+
+    //Get form data and create profile
+    let form = document.getElementById(`profile_form`);
+            
+    //AddEventListener to listen for form submission
+    form.addEventListener('submit', event => {
+
+        //prevent default behaviour and get data from form submission
+        event.preventDefault();
+        let formData = new FormData(form);
+        result = {};
+
+        //Loop through form submission entries and differenciate object record's external_id, user_id (for order's only) and object attributes;
+        for (let entry of formData.entries()){
+          result[entry[0]] = entry[1];
+        };
+        result = JSON.stringify(result);
+        let data = `{\"profile\":{\"source\":\"${ticketBrandNameFormatted}\",\"identifiers\":{\"user_id\":\"${ticketRequesterId}\"},\"attributes\":${result}}}`;
+        
+        const createSettings = {url:`/api/sunshine/profile`,method:`POST`,data: data};
+        client.request(createSettings).then(response =>{
+          console.log(response);
+          client.invoke('destroy');
+        }).catch(error =>{
+          showError(error);
+        });
+    });
+
+    //Catch error and offer option to create new profile if no profile exist for this brand
+    function showError(error){
+      console.log(error);
+      $('#form-header').before(`<div class="ui error message"><i class="close icon"></i>${error.responseJSON.id}: ${error.responseJSON.reason}</div>`);
+      $('.message .close').on('click', function() {
+        $(this).closest('.message').remove();
+      });
+    };
+
+  </script>
+</body>
+</html>

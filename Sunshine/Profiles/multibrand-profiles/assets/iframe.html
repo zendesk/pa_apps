@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="styles.css" type="text/css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" type="text/css">
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="ui main container">
+    <div class="ui card" style="margin-top:5px">
+      <div class="content" id="profile-info"></div>
+      <div class="content custom-scrollbar" id="profile-attributes">
+        <div class="loader">
+            <div class="donut_spinner"></div>
+        </div>
+      </div>
+      <div class="extra content" id="brand-info"></div>
+    </div>
+  </div>
+
+  <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+  <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  <script>
+    // Initialise Apps framework client. See also:
+    // https://developer.zendesk.com/apps/docs/developer-guide/getting_started
+    var client = ZAFClient.init();
+    client.invoke('resize', { width: '100%', height: '310px' });
+
+    //Get current requester ID, brand name and Sunshine profile
+    client.get('ticket').then(data =>{
+      ticketRequesterId = data.ticket.requester.id;
+      ticketRequesterAvatar = data.ticket.requester.avatarUrl;
+      ticketBrandName = data.ticket.brand.name;
+      ticketBrandNameFormatted = ticketBrandName.replace(/ /g,"_");
+
+      //Check if brand has a logo otherwise use fallback
+      if (data.ticket.brand.logo != null) {
+        ticketBrandLogo = data.ticket.brand.logo.thumbnailUrl;
+      } else {
+        ticketBrandLogo = 'img/brand_fallback.png';
+      };
+
+      //Add brand name & logo to the card's footer
+      document.getElementById('brand-info').innerHTML = `<img class="ui rounded image" src="${ticketBrandLogo}"><span>${ticketBrandName} profile</span>`;
+
+      //Get profile associated with brand
+      const profileSettings = {url:`/api/sunshine/profile?identifier=${ticketBrandNameFormatted}:user_id:${ticketRequesterId}`,method:`GET`};
+      client.request(profileSettings).then(response => {
+        const profileAttributes = response.data.attributes;
+        let attributeList = '';
+        const ignoredAttributeList = ['current_location','do_not_track_location','role_id'];
+
+        //Check if profile_picture exists otherwise use requester picture has fallback
+        if (response.data.photo_url.length > 0){
+          profilePhotoUrl = response.data.photo_url;
+        } else {
+          profilePhotoUrl = ticketRequesterAvatar;
+        };
+
+        //Add name, profile_picture and user id to card's header
+        document.getElementById('profile-info').innerHTML = `<div class="ui right dropdown item profile-actions" id="modal_update"><i class="dropdown icon"></i><div class="menu"><div class="item" onClick="init(this.id)" id="modal_update"><i class="pencil icon"></i> Edit</div><div class="item" onClick="init(this.id)" id="modal_delete"><i class="trash alternate icon"></i> Delete</div></div></div></i><h3 class="ui header" style="margin: 0px;"><img src="${profilePhotoUrl}" class="ui circular image"><div class="content">${response.data.name}<div class="sub header">id: ${ticketRequesterId}</div></div></h3>`;
+
+        $('.ui.dropdown').dropdown();
+
+        //Loop through profile attributes
+        for (const [key, value] of Object.entries(profileAttributes)) {
+
+          //Ignore system attributes current_location, do_not_track_location and role_id
+          if (ignoredAttributeList.includes(key)){
+          } else {
+            attributeList += `<div class="column"><label>${key.replace('_',' ')}</label><p>${value}</p></div>`;
+          };
+        };
+        
+        //Add attributes to DOM
+        document.getElementById('profile-attributes').innerHTML = `<div class="ui two column grid">${attributeList}</div>`;
+      }).catch(error =>{
+        showError(error)
+      });
+    });
+
+    //Get app context to send to modal
+    function init(clicked_id){
+      modalType = clicked_id;
+      client.context().then(popModal);
+    };
+
+    //Open modal with form to create new profile for the current brand
+    function popModal(context) {
+      let parent_guid = context.instanceGuid;
+      client.invoke('instances.create', {
+          location: 'modal',
+          url: `assets/${modalType}.html#${parent_guid}`,
+          size: {
+          width: '35vw',
+          height: '60vh'
+          }
+      }).then(modalContext => {
+          // The modal is on screen now
+          const modalClient = client.instance(modalContext['instances.create'][0].instanceGuid);
+          modalClient.on('modal.close', function() {
+          // The modal has been closed
+          setTimeout(function(){window.location.reload();}, 2000);
+          });
+      });
+    };
+
+    //Reload app when ticket brand is changed
+    client.on('ticket.brand.changed', function(e) {
+      window.location.reload();
+    });
+
+    //Catch error and offer option to create new profile if no profile exist for this brand
+    function showError(error){
+      let errorReason = error.responseJSON.reason;
+      switch(errorReason){
+        case 'Profile not found':
+          errorMessage = `<div class="ui warning message"><div class="ui tiny header">No profile found for ${ticketBrandName}</div><p>Let's <a onClick="init(this.id)" id="modal_create">create a new one!</a></p></div>`
+        break;
+        default:
+          errorMessage = `<div class="ui negative message"><div class="header">${errorReason}</div><p>Error ID ${error.responseJSON.id}</p></div>`
+      };
+      document.getElementById('profile-info').innerHTML = `<h3 class="ui header"><img src="img/profile_fallback.png" class="ui circular image"><div class="content">Shy customer...<div class="sub header">...is shy</div></div></h3>`
+      document.getElementById('profile-attributes').innerHTML = errorMessage;
+    };
+
+  </script>
+</body>
+</html>

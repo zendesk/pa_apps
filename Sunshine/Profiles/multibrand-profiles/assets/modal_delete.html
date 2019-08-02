@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="styles.css" type="text/css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="ui main container">
+        <div class="ui header" id="modal-header"></div>
+        <p>Are you sure you want to delete this profile?</p>
+        <button class="ui right floated red button" onClick="deleteProfile()">Delete</button>
+        <button class="ui right floated basic button" onClick="closeModal()">Cancel</button>
+    </div>
+  <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+  <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  <script>
+    // Initialise Apps framework client. See also:
+    // https://developer.zendesk.com/apps/docs/developer-guide/getting_started
+    var client = ZAFClient.init();
+    client.invoke('resize', { width: '35vw', height: '120px' });
+
+    //Launch function to retrieve ticket context when modal opens
+    client.on('app.registered', init);
+
+    //Get ticket context from parent GUID
+    function init(){
+      let parent_guid = window.location.hash.replace('#','');
+      let pc = getParentClient(parent_guid);
+      pc.get('ticket').then(data =>{
+        ticketRequesterId = data.ticket.requester.id;
+        ticketBrandName = data.ticket.brand.name;
+        ticketBrandNameFormatted = ticketBrandName.replace(/ /g,"_");
+
+        //Add header to DOM
+        document.getElementById('modal-header').innerHTML = `Delete ${ticketBrandName} profile`;
+      });
+    };
+
+    //Close modal
+    function closeModal(){
+      client.invoke('destroy');
+    };
+
+    //Delete profile
+    function deleteProfile(){
+      const profileSettings = {url:`/api/sunshine/profile?identifier=${ticketBrandNameFormatted}:user_id:${ticketRequesterId}`,method:`DELETE`};
+      client.request(profileSettings).then(response =>{
+        closeModal();
+      }).catch(error =>{
+        showError(error);
+      });
+    };
+
+    //Get parent GUID
+    function getParentClient(parent_guid) {
+      return client.instance(parent_guid)
+    };
+
+    //Catch error and offer option to create new profile if no profile exist for this brand
+    function showError(error){
+      console.log(error);
+      $('#form-header').before(`<div class="ui error message"><i class="close icon"></i>${error.responseJSON.id}: ${error.responseJSON.reason}</div>`);
+      $('.message .close').on('click', function() {
+        $(this).closest('.message').remove();
+      });
+    };
+
+  </script>
+</body>
+</html>

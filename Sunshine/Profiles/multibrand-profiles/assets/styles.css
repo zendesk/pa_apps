@@ -1,0 +1,129 @@
+html {
+    overflow-y: auto !important;
+}
+
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#profile-attributes {
+    position: relative;
+    min-height: 60px;
+    max-height: 180px;
+    overflow-y: scroll;
+}
+
+#profile-attributes label {
+    /*font-size: 14px;
+    font-weight: normal;
+    color: #68737D;*/
+    text-transform: capitalize;
+    display: block;
+    color: rgba(0,0,0,.87);
+    font-size: .92857143em;
+    font-weight: 700;
+}
+
+#profile-attributes p {
+    font-size: 14px;
+}
+
+#profile-attributes .column {
+    padding-top: .5rem !important;
+    padding-bottom: .5rem !important;
+}
+
+#modal_update.profile-actions {
+    right: 15px;
+    top: 8px;
+    position: absolute;
+}
+
+#brand-info img {
+    width: 25px;
+    margin-right: 10px;
+}
+
+.loader {
+    position: absolute;
+    background: #FFFFFF;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 1;
+}
+
+.donut_spinner {
+    display: inline-block;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: rgb(254, 226, 103);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: donut-spin 1.2s linear infinite;
+    position: relative;
+}
+
+@keyframes donut-spin {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    box-shadow: inset 0 0 10px 10px transparent;
+    border: solid 2px transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    box-shadow: inset 0 0 10px 10px rgba(0, 0, 0, 0.5);
+    border: solid 2px transparent;
+    transition: box-shadow 0.5s ease;
+    /*background-color: rgba(20,30,48,.5);
+    transition: background-color 0.5s ease;
+    border-radius: 10px;*/
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    /*background-color: rgba(20,30,48,1);*/
+    box-shadow: inset 0 0 10px 10px rgba(0, 0, 0, 1);
+}
+
+#labelField i {
+    transition:all 0.3s ease;
+}
+
+#labelField ~ .input {
+    width: 0px;
+    overflow: hidden;
+    transition:all 0.3s ease;
+}
+
+#labelField ~ .pointing {
+    transition:all 0.3s ease;
+    opacity: 1;
+}
+
+#labelField.active {
+    background-color: #db2828;
+}
+
+#labelField.active i {
+    -webkit-transform: rotateZ(-45deg);
+    -ms-transform: rotateZ(-45deg);
+    transform: rotateZ(-45deg);
+}
+
+#labelField.active ~ .input {
+    width: 159px;
+}
+
+#labelField.active ~ .pointing {
+    opacity: 0;
+}

@@ -1,0 +1,8 @@
+{
+  "app": {
+    "name": "Multibrand Profiles",
+    "short_description": "View, create & update Sunshine user profiles related to a brand.",
+    "long_description": "The Multibrand profiles app is a Zendesk App that allows agents to view, create & update Sunshine user profiles related to a brand. By default, the app displays the user profile associated with the ticket's brand. If it doesn't exist, the agent can create a new profile for this user, or switch brands on the ticket to see the other profiles. ",
+    "installation_instructions": "Simply click install."
+  }
+}
