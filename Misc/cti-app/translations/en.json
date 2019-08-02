@@ -1,0 +1,17 @@
+{
+  "app": {
+    "name": "CTI app",
+    "short_description": "Demo Zendesk & CTI partner integration",
+    "long_description": "The CTI app simulates an integration between Zendesk Support and a CTI partner through Talk Partner Edition APIs. The app let's the user demo a call coming in, the dynamic creation of a call ticket, and dynamic update of the ticket with the call information & recording.",
+    "installation_instructions": "Customise settings, or leave the default and click install. You can always change the settings later on.",
+    "parameters":{
+      "caller_name": {"label": "Caller name", "helpText": "Name of the caller"},
+      "caller_phone": {"label": "Caller phone number","helpText": "Phone number of the caller"},
+      "caller_info": {"label": "Caller info","helpText": "Additional info displayed next to the caller profile "},
+      "caller_id": {"label": "Caller ID","helpText": "Zendesk User ID of the caller"},
+      "call_about": {"label": "About","helpText": "Reason for the call"},
+      "custom_field_id": {"label": "Custom field ID","helpText": "ID of the custom field to update"},
+      "custom_field_value": {"label": "Custom field value","helpText": "Value of the custom field to update (use option tag for dropdown field)"}
+    }
+  }
+}

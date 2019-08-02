@@ -1,0 +1,68 @@
+{
+  "name": "CTI App",
+  "author": {
+    "name": "Romain Rothier",
+    "email": "rrothier@zendesk.com",
+    "url": ""
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "location": {
+    "support": {
+      "top_bar": "assets/iframe.html"
+    }
+  },
+  "parameters": [
+    {
+      "name": "caller_name",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "Karl Jones"
+    },
+    {
+      "name": "caller_phone",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "+33663338279"
+    },
+    {
+      "name": "caller_info",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "Status: VIP"
+    },
+    {
+      "name": "caller_id",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "375342629492"
+    },
+    {
+      "name": "call_about",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "Returning an order/purchase"
+    },
+    {
+      "name": "custom_field_id",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "360015978432"
+    },
+    {
+      "name": "custom_field_value",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "returning_an_order/purchase"
+    }
+  ],
+  "version": "1.0",
+  "frameworkVersion": "2.0"
+}

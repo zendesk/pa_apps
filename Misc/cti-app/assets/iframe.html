@@ -1,0 +1,151 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+</head>
+<style>
+  .ui.buttons {
+    margin-bottom: 10px; 
+    height: 0px; 
+    overflow: hidden;
+    transition: all .5 ease;
+  }
+
+</style>
+<body>
+  <div class="ui main container">
+    <img class="ui centered small image" src="img/logo-integration.jpg">
+    <div class="ui form">
+      <div class="field">
+          <label>Status</label>
+          <div class="ui selection dropdown">
+              <input type="hidden" name="gender">
+              <i class="dropdown icon"></i>
+              <div class="default text"><i class="green dot circle icon"></i> Online</div>
+              <div class="menu">
+                  <div class="item" data-value="0"><i class=" green dot circle icon"></i> Online</div>
+                  <div class="item" data-value="1"><i class="orange dot circle icon"></i> On break</div>
+                  <div class="item" data-value="2"><i class="teal dot circle icon"></i> On call</div>
+                  <div class="item" data-value="3"><i class="red dot circle icon"></i> Offline</div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <br/>
+    <div class="ui cards">
+      <div class="card">
+        <div class="content">
+          <div class="ui tiny statistics">
+            <div class="olive statistic">
+              <div class="value">00:33</div>
+              <div class="label">Current session</div>
+            </div>
+            <div class="teal statistic">
+              <div class="value">04:28</div>
+              <div class="label">Time today</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="content">
+          <div class="header">Incoming call...</div>
+        </div>
+        <div class="content">
+            <div class="ui unstackable items">
+              <div class="item">
+                  <img class="ui circular mini image" src="img/customer-profile.jpg" style="width: 80px !important;">
+                <div class="middle aligned content" id="caller-details">
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <br/>
+    <div class="ui fluid icon buttons">
+      <button class="ui button"><i class="pause icon"></i></button>
+      <button class="ui button"><i class="arrows alternate horizontal icon"></i></button>
+      <button class="ui button"><i class="dot circle icon"></i></button>
+      <button class="ui button"><i class="microphone slash icon"></i></button>
+    </div>
+    <button class="green fluid ui button btn-accept"><i class="phone icon"></i> Accept call</button>
+  </div>
+
+  <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+  <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  <script>
+    // Initialise the Zendesk JavaScript API client
+    // https://developer.zendesk.com/apps/docs/apps-v2
+    var client = ZAFClient.init();
+    client.invoke('resize', { width: '320px', height: '485px' });
+
+    //Initialize dropdown
+    $('.ui.dropdown').dropdown();
+
+    //Get current date
+    currentDate = new Date();
+    currentDateIso = currentDate.toISOString();
+    currentDateUtc = currentDate.toUTCString();
+    
+    //Get current agent to pop the ticket to the right screen
+    client.get('currentUser').then(response =>{
+      const agent_name = response.currentUser.name;
+      const agent_id = response.currentUser.id;
+
+      //Get app settings to customise caller data in the ticket
+      client.metadata().then(metadata => {
+        let caller_name = metadata.settings.caller_name;
+        let caller_phone = metadata.settings.caller_phone;
+        let caller_info = metadata.settings.caller_info;
+        let caller_id = metadata.settings.caller_id;
+        let call_about = metadata.settings.call_about;
+        let custom_field_id = metadata.settings.custom_field_id;
+        let custom_field_value = metadata.settings.custom_field_value;
+
+        //Add caller data to DOM
+        document.getElementById('caller-details').innerHTML = `<a class="header">${caller_name}</a><div class="description"><p>${caller_phone}</p><p>${caller_info}</p>`;
+
+        //Create new call ticket when Accept call button is clicked and populate with info from app settings
+        $('.btn-accept').click(event =>{
+          const callinSettings = {
+            "url": "/api/v2/channels/voice/tickets.json",
+            "method":"POST",
+            "headers": {
+              "content-type": "application/json"
+            },
+            "processData": false,
+            "data": `{\"display_to_agent\":\"${agent_id}\",\"ticket\":{\"via_id\":45,\"requester_id\":\"${caller_id}\",\"subject\":\"Incoming call from ${caller_name}\",\"comment\":{ \"html_body\":\"<b>Incoming call from ${caller_name}</b><br/>Time of call: ${currentDateUtc}<br/>Answered by: ${agent_name}<br/>About: ${call_about}\",\"public\":\"false\"},\"custom_fields\":[{\"id\":${custom_field_id},\"value\":\"${custom_field_value}\"}]}}`
+          };
+          client.request(callinSettings).then(response =>{
+            let ticket_id = response.ticket.id;
+
+            //Replace accept call button by hang up call button, and show hidden call controls
+            client.invoke('resize', { width: '320px', height: '530px' });
+            $('.btn-accept').replaceWith('<button class="red fluid ui button btn-callout" style="margin-top: 10px;"><i class="hand point down icon"></i> Hang up call</button>');
+            $('.ui.buttons').css("height","inherit");
+
+            //Update existing call ticket when hang up call is clicked and reload app
+            $('.btn-callout').click(event =>{
+              var calloutSettings = {
+                "url": `/api/v2/tickets/${ticket_id}.json`,
+                "method":"PUT",
+                "headers": {
+                  "content-type": "application/json"
+                },
+                "processData": false,
+                "data": `{\"ticket\":{\"voice_comment\":{\"from\":\"${caller_phone}\",\"to\":\"+4402036267911\",\"recording_url\":\"https://clomain.com/zendesk/assets/Zendesk-call-recording.mp3\", \"started_at\":\"${currentDateIso}\",\"call_duration\": 414,\"answered_by_id\":${agent_id},\"transcription_text\":\"The transcription of the call\",\"location\": \"London, UK\"}}}`
+              };
+              client.request(calloutSettings).then(response =>{
+                window.location.reload();
+              });
+            });
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
