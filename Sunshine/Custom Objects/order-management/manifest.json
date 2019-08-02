@@ -1,0 +1,47 @@
+{
+  "name": "Order Viewer",
+  "author": {
+    "name": "Romain Rothier",
+    "email": "rrothier@zendesk.com",
+    "url": ""
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "location": {
+    "support": {
+      "ticket_sidebar": "assets/iframe.html"
+    }
+  },
+  "parameters": [
+    {
+      "name": "object_1",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "order"
+    },
+    {
+      "name": "user_to_object",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "ordered"
+    },
+    {
+      "name": "object_2",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "product"
+    },
+    {
+      "name": "object_to_object",
+      "type": "text",
+      "required": true,
+      "secure": false,
+      "default": "contains"
+    }
+  ],
+  "version": "1.0",
+  "frameworkVersion": "2.0"
+}

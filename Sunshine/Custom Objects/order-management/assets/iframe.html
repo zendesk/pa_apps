@@ -1,0 +1,197 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="src/styles.css" type="text/css">
+  <link rel="stylesheet" href="src/architecture-main.css" type="text/css">
+  <script src="src/jquery-3.3.1.min.js" type="text/javascript"></script>
+  <script src="src/list.min.js" type="text/javascript"></script>
+  <style>
+    @font-face{
+      font-family:'Font Awesome 5 Free';
+      font-style:normal;font-weight:900;
+      src:url(fonts/fa-solid-900.eot);
+      src:url(fonts/fa-solid-900.eot?#iefix) format("embedded-opentype"),url(fonts/fa-solid-900.woff2) format("woff2"),url(fonts/fa-solid-900.woff) format("woff"),url(fonts/fa-solid-900.ttf) format("truetype"),url(fonts/fa-solid-900.svg#fontawesome) format("svg")
+    }
+  </style>
+</head>
+<body>
+<div id="objects_container">
+  <div class="user_container">
+  </div>
+  <div class="search_container">
+    <input class="search" placeholder="Search by ID, date, attribute..."/>
+    <button class="sort" data-sort="object_id_formatted">Sort by ID</button>
+    <button class="sort" data-sort="object_timestamp">Sort by date</button>
+  </div>
+</div>
+
+  <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+  <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+  <script>
+    //Initialise the Zendesk JavaScript API client
+    var client = ZAFClient.init(); 
+    client.invoke('resize', { width: '100%', height: '400px' });
+
+    //Get relationship types from settings
+    client.metadata().then(metadata =>{
+      user_to_object = metadata.settings.user_to_object;
+      object_to_object = metadata.settings.object_to_object;
+      object_1 = metadata.settings.object_1;
+      object_2 = metadata.settings.object_2;
+    });
+
+    //Get requester ID
+    client.get('ticket.requester').then(data =>{
+      requester_id = data['ticket.requester'].id;
+      let requester_name = data['ticket.requester'].name;
+      let requester_avatarUrl = data['ticket.requester'].avatarUrl;
+
+      //Add current requester id, name & picture to the DOM
+      $('.user_container').append(`<div class="card mb-3 widget-content bg-royal"><div class="widget-content-wrapper text-white"><div class="widget-content-left"><img src="${requester_avatarUrl}" alt="User avatar"/></div><div class="widget-content-left" style="margin-left:10px"><div class="widget-heading">${requester_name}</div><div class="widget-subheading">User ID: ${requester_id}</div></div></div></div>`);
+
+      //Get list of objects related to current requester
+      const settings = {"url": `/api/sunshine/objects/records/zen:user:${requester_id}/related/${user_to_object}?order=desc`};
+      client.request(settings).then(response =>{
+        
+        //Check if existing objects related to current requester
+        if (response.data.length === 0){
+
+          //Display error message if no object is retrieved
+          $('#objects_container').append(`<div class="alert alert-warning fade show" role="alert">No ${object_1} found for this customer.</div>`);
+        } 
+        else {
+
+          //Loop through each object and create list (see function below)
+          createList(response);
+
+          //Load script once object list is created
+          $.when(createList).done(event =>{
+            $.getScript('src/architecture-main.js', function(){
+          });
+            
+            //Initiate list.js list (see function below)
+            initiateList();
+          });
+        }
+      }).catch(error =>{
+
+        //Display error message (see function below)
+        showCoError(error);
+      });
+    });
+
+    /* FUNCTIONS */
+
+    //Function - Create object list
+    function createList(response){
+      let object = response.data;
+      let object_list = '';
+
+      //Loop through objects
+      for(var i = 0; i < object.length; i++){
+        let zendesk_id = object[i].id;
+        let object_id = object[i].external_id;
+        let object_id_formatted = object_id.replace(/_/g, ' ');
+        let object_date = object[i].created_at;
+        let object_date_formatted = new Date(Date.parse(object_date)).toUTCString();
+        let object_attributes = object[i].attributes;
+        let object_attribute_list = '';
+        let status = '';
+
+        //Loop through object attributes for each objects
+        for(var key in object_attributes){
+
+          if(key == 'status'){
+            switch(object_attributes[key]){
+              case 'completed':
+              case 'delivered':
+              case 'done':
+                status_type = 'success';
+              break;
+              case 'pending':
+              case 'waiting':
+                status_type = 'warning';
+              break;
+              default:
+                status_type = 'info';
+            };
+            status = `<div class="mb-2 mr-2 badge badge-${status_type}">${object_attributes[key]}</div>`
+          }
+
+          object_attribute_list += `<li class="object_attribute"><span class="label">${key.replace(/_/g, ' ')}</span>${object_attributes[key]}</li>`;
+        };
+
+        object_list += `<li class="object"><div class="main-card mb-3 card"><div class="card-body"><h5 class="card-title object_id_formatted">${object_id_formatted}</h5>${status}<p class="object_timestamp" style="display:none;">${object_date}</p><p class="object_date">${object_date_formatted}</p><button type="button" data-toggle="collapse" href="#collapse_${zendesk_id}" class="btn-less"><i class="fas fa-times"></i></button><div class="collapse" id="collapse_${zendesk_id}"><hr><ul class="attribute_list">${object_attribute_list}</ul><hr><button class="mb-3 mr-2 btn btn-dark btn-block bg-royal object_detail" id="${zendesk_id}">View detail</button></div></div><div class="card-footer"><button type="button" data-toggle="collapse" href="#collapse_${zendesk_id}" class="btn-more"><i class="fas fa-angle-down"></i></button></div></div></li>`;
+      };
+
+      //Add list to DOM
+      $('#objects_container').append(`<ul class="list">${object_list}</ul>`);
+
+      //Pop modal open when View button is clicked
+      $('.object_detail').click(function(){
+
+        //Get zendesk id of current object
+        let id = $(this).attr('id');
+
+        //Pop modal (see function below)
+        popModal(id);
+      });
+    };
+
+    //Function - Initiate order list with list.js
+    function initiateList() {
+
+      //Define search and sorting parameters
+      let options = {
+        valueNames: [ 'object_id_formatted', 'object_date', 'object_attribute','object_timestamp' ]
+      };
+
+      //Create list
+      let hackerList = new List('objects_container', options);
+    };
+
+    //Function - pop modal open with object details
+    function popModal(id) {
+      client.invoke('instances.create', {
+        location: 'modal',
+        url: 'assets/modal.html#' + id + '&' + requester_id,
+        size: {
+          width: '70vw',
+          height: '70vh'
+        }
+      }).then(function(modalContext) {
+        // The modal is on screen now
+        var modalClient = client.instance(modalContext['instances.create'][0].instanceGuid);
+        modalClient.on('modal.close', function() {
+        // The modal has been closed
+        });
+      });
+    };
+
+    //Function - standard error handling
+    function showError(error) {
+      let error_message = error.message;
+      console.log(error);
+      $('#objects_container').prepend('<div class="alert alert-danger fade show" role="alert">Error: ' + error_message + '.</div>');
+    };
+
+    //Function - Error handling for Custom Objects API
+    function showCoError(error) {
+            let this_error = error.responseJSON.errors[0]
+            let error_status = this_error.status;
+            let error_detail = this_error.detail;
+            console.log(error);
+            switch(error_detail) {
+                case 'The given Resource Type does not exist':
+                case 'The given Relationship Type does not exist':
+                    error_message = `Error ${error_status}: ${error_detail}.<br><a href="https://github.com/zendesk/order-management#getting-started" class="alert-link" target="_blank">Check out the documentation</a> and make sure you have created the right object & relationship types.`;
+                break;
+                default:
+                    error_message = `Error ${error_status}: ${error_detail}.`;
+                };
+            $('#objects_container').append(`<div class="alert alert-danger fade show" role="alert">${error_message}</div>`);
+        };
+
+  </script>
+</body>
+</html>

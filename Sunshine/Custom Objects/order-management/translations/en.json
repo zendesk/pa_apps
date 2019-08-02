@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "Order Viewer",
+    "short_description": "View orders & products related to a user.",
+    "long_description": "The app lets agents search through or sort orders, view order attributes, detail and events from the ticket sidebar",
+    "installation_instructions": "Simply click install.",
+    "parameters": {
+      "object_1": {"label": "Object 1 name", "helpText": "The name of the object linked to the user (e.g: order). This should also be this object type's key."},
+      "user_to_object": {"label": "Relationship type 1", "helpText": "The relationship type key between the user and the object 1"},
+      "object_2": {"label": "Object 2 name", "helpText": "The name of the second object linked to the first object (e.g: product). This should also be this object type's key."},
+      "object_to_object": {"label": "Relationship type 2", "helpText": "The relationship type key between object 1 and object 2"}
+    }
+  }
+}

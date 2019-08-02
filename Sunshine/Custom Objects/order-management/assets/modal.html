@@ -1,0 +1,256 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="src/styles.css" type="text/css">
+  <link rel="stylesheet" href="src/architecture-main.css" type="text/css">
+  <script src="src/jquery-3.3.1.min.js" type="text/javascript"></script>
+  <script src="src/list.min.js" type="text/javascript"></script>
+  <script src="src/architecture-main.js" type="text/javascript"></script>
+  <style>
+    @font-face{
+      font-family:'Font Awesome 5 Free';
+      font-style:normal;font-weight:900;
+      src:url(fonts/fa-solid-900.eot);
+      src:url(fonts/fa-solid-900.eot?#iefix) format("embedded-opentype"),url(fonts/fa-solid-900.woff2) format("woff2"),url(fonts/fa-solid-900.woff) format("woff"),url(fonts/fa-solid-900.ttf) format("truetype"),url(fonts/fa-solid-900.svg#fontawesome) format("svg")
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid" id="modal">
+    <div class="row" style="padding:5px">
+      <div class="col-md-12">
+        <div class="main-card mb-3 card">
+          <div class="card-body" id="object_container">
+            <h5 class="card-title" id="object_id_formatted"></h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-7">
+        <div class="main-card mb-3 card">
+          <div class="card-body">
+            <h5 class="card-title" id="object_detail"></h5>
+            <div class="scroll-area-sm">
+              <div class="scrollbar-container ps--active-y ps">
+                <div class="table-responsive" id="object_detail_container"></div>
+                <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                  <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+                </div>
+                <div class="ps__rail-y" style="top: 0px; height: 200px; right: 0px;">
+                  <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 55px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="main-card mb-3 card">
+          <div class="card-body">
+            <h5 class="card-title" id="object_events"></h5>
+            <div class="scroll-area-sm">
+              <div class="scrollbar-container ps--active-y ps" id="object_events_container">
+                <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                  <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+                </div>
+                <div class="ps__rail-y" style="top: 0px; height: 200px; right: 0px;">
+                  <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 55px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+<script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+<script>
+  //Initialise the Zendesk JavaScript API client
+  var client = ZAFClient.init();
+
+  //Retrieve current object id from url hash and initiate data retrieval (see function below)
+  client.on('app.registered', init);
+  
+  /* FUNCTIONS */
+
+  //Function - Retrieve current object id from url hash
+  function init(){
+    //Get url parameters
+    let hashes = window.location.hash;
+    let param = hashes.split('&');
+    id = param[0].replace('#','');
+    requester_id = param[1];
+
+    //Get relationship types from settings
+    client.metadata().then(metadata =>{
+      user_to_object = metadata.settings.user_to_object;
+      object_to_object = metadata.settings.object_to_object;
+      object_1 = metadata.settings.object_1;
+      object_2 = metadata.settings.object_2;
+
+      document.getElementById('object_detail').innerHTML = `${object_1} detail`;
+      document.getElementById('object_events').innerHTML = `${object_1} events`;
+
+      //Get data from custom objects & events (see function below)
+      getData();
+    });
+  };
+
+  //Function - Get data from custom objects
+  function getData(){
+    //Get object's attributes
+    const objectSettings = {"url": `/api/sunshine/objects/records/${id}`};
+    client.request(objectSettings).then(response =>{
+      
+      //Loop through object's attributes and create list (see function below)
+      createAttributeList(response);
+      
+      //Get events related to current object, loop through and create list (see function below)
+      createEventList(response);
+    }).catch(error =>{
+
+    //Display error message (see function below)
+    showCoError(error);
+    });
+    
+    //Get list of objects related to current object
+    const objectDetailSettings = {"url": `/api/sunshine/objects/records/${id}/related/${object_to_object}?order=desc`};
+    client.request(objectDetailSettings).then(response =>{
+      
+      //Check if existing objects related to current object
+      if (response.data.length == 0){
+        
+        //Display error message if no object is retrieved
+        document.getElementById('object_detail_container').innerHTML = '<div class="alert alert-warning fade show" role="alert">No products found for this order.</div>';
+      } 
+      else {
+        
+        //Loop through each object and create list (see function below)
+        createSkuList(response);
+      }
+    }).catch(error =>{
+
+    //Display error message (see function below)
+    showCoError(error);
+    });
+  };
+  
+  //Function - Create current object attribute list
+  function createAttributeList(response){
+    let object = response.data;
+    let zendesk_id = object.id;
+    let object_id_formatted = object.external_id.replace(/_/g, ' ');
+    let object_attributes = object.attributes;
+    let object_attribute_list = '';
+    
+    //Loop through object attributes
+    for(var key in object_attributes){
+      object_attribute_list += `<li class="object_attribute"><span class="label">${key.replace(/_/g, ' ')}</span>${object_attributes[key]}</li>`;
+    };
+    
+    //Add list to DOM
+    $('#object_container').append(`<ul class="attribute_list">${object_attribute_list}</ul><button class="mb-2 mr-2 btn btn-light">Track order</button><button class="mb-2 mr-2 btn btn-light">Create return label</button><button class="mb-2 mr-2 btn btn-danger">Refund</button>`);
+    $('#object_id_formatted').append(object_id_formatted);
+  };
+  
+  //Function - Create related objects list
+  function createSkuList(response){
+    let object = response.data;
+    let object_list = '';
+    let object_attribute_keys = '';
+    
+    //Loop through object attributes to create first line of table
+    for(var key in object[0].attributes){
+      object_attribute_keys += `<th><span class="label">${key.replace(/_/g, ' ')}</span></th>`;
+    };
+    
+    //Loop through objects
+    for(var i = 0; i < object.length; i++){
+      let object_attributes = object[i].attributes;
+      let object_attribute_list = '';
+      
+      //Loop through object attributes for each objects
+      for(var key in object_attributes){
+
+        if(object_attributes[key].startsWith("http")){
+          object_attribute_list += `<td class="order_detail_attribute"><img src="${object_attributes[key]}" height="80px"/></td>`;
+        } else {
+          //Check if any attribute is an image (extension jpg, jpeg, png, gif)
+          var extension = object_attributes[key].substr( (object_attributes[key].lastIndexOf('.') +1) );
+          switch(extension) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+            case 'gif':
+              object_attribute_list += `<td class="order_detail_attribute"><img src="img/${object_attributes[key]}" height="80px"/></td>`;
+            break;
+            default:
+              //If attribute is not an image, render as text
+              object_attribute_list += `<td class="order_detail_attribute">${object_attributes[key]}</td>`;
+          };
+        };
+      };
+      
+      //Add all rows in object_list
+      object_list += `<tr>${object_attribute_list}</tr>`;
+      
+    };
+    
+    //Add list to DOM
+    $('#object_detail_container').append(`<table class="mb-0 table"><thead><tr>${object_attribute_keys}</tr></thead><tbody>${object_list}</tbody></table>`);
+  };
+  
+  //Function - Create event list
+  function createEventList(response) {
+    let object_id = response.data.external_id.replace(' ', '_');
+    
+    const eventSettings = {"url": `/api/sunshine/events?identifier=support:user_id:${requester_id}&source=${object_id}`};
+    client.request(eventSettings).then(response =>{
+      let event = response.data;
+      let events = '';
+      
+      //Loop through events to get description and properties
+      for (var i = 0; i <event.length;i++){
+        let event_description = event[i].description;
+        let event_type = event[i].type;
+        let event_source = event[i].source;
+        let event_date = event[i].created_at;
+        let event_date_formated = new Date(Date.parse(event_date)).toUTCString();
+        
+        //Show default description if event doesn't have a description 
+        if(event_description == '') {
+          events += `<li class="event" id="${i}"><h2 class="event_description">System default</h2><p class="event_date">${event_date_formated}</p><p class="event_timestamp" style="display: none;">${event_date}</p><p class="event_type" style="display: none;">${event_type}</p><p class="event_source" style="display: none;">${event_source}</p></li>`;
+        }
+        else {
+          events += `<li class="event" id="${i}"><h2 class="event_description">${event_description}</h2><p class="event_date">${event_date_formated}</p><p class="event_timestamp" style="display: none;">${event_date}</p><p class="event_type" style="display: none;">${event_type}</p><p class="event_source" style="display: none;">${event_source}</p></li>`;
+        }
+      };
+      
+      //Append list of events
+      $('#object_events_container').prepend(`<ul class="list">${events}</ul>`);
+    }).catch(error =>{
+      $('#object_events_container').prepend('<div class="alert alert-warning fade show" role="alert">No events found for this order.</div>');
+      console.log(error);
+    });
+  };
+
+  //Function - standard error handling
+  function showError(error) {
+    var error_message = error.message;
+    console.log(error);
+    $('#objects_container').prepend(`<div class="alert alert-danger fade show" role="alert">Error: ${error_message}.</div>`);
+  };
+
+  //Function - Error handling for Custom Objects API
+  function showCoError(error) {
+    let this_error = error.responseJSON.errors[0]
+    let error_status = this_error.status;
+    let error_detail = this_error.detail;
+    console.log(error);
+    $('#modal').prepend(`<div class="alert alert-danger fade show" role="alert">Error ${error_status}: ${error_detail}.</div>`);
+  };
+  
+</script>
+</body>
+</html>
