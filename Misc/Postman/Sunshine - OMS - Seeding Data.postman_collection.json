@@ -1826,12 +1826,12 @@
 		"basic": [
 			{
 				"key": "password",
-				"value": "0330ej69",
+				"value": "",
 				"type": "string"
 			},
 			{
 				"key": "username",
-				"value": "ewillis@zendesk.com",
+				"value": "",
 				"type": "string"
 			}
 		]
@@ -1862,13 +1862,13 @@
 		{
 			"id": "5ec15fe6-a6f4-42c2-af9d-9b66fd1e2cc9",
 			"key": "subdomain",
-			"value": "z3n-dezzed",
+			"value": "",
 			"type": "string"
 		},
 		{
 			"id": "6198c2ac-3772-456c-bfc8-5a62ddc8e90c",
 			"key": "email",
-			"value": "ewillis@zendesk.com",
+			"value": "",
 			"type": "string"
 		},
 		{
