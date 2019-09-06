@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        body, html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+        }
+        
+        .bg {                 
+            overflow-y: hidden ! important;
+            overflow-x: hidden ! important;
+            background-color: #000000;
+            background-image: url('background.png');        
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: right;
+        }
+
+        .fixedbutton {
+            position: fixed;
+            bottom: 25px;
+            right: 25px; 
+            color: red;
+            background: white;
+        }
+    </style>
+    <title>IoT Fleet Management</title>
+    <script>
+        var ticketID = '';
+        var objectID = '';
+
+        function create() {
+            //alert("Background clicked");
+            
+            console.log(`ticketID: ${ticketID}`);
+            console.log(`objectID; ${objectID}`);
+            
+            // Cleanup first just in case
+            doClean();           
+
+            createTicket();
+            createSunshineObject();
+            createSunshineEvent();            
+        }
+
+        function createTicket() {
+            //alert("Create Ticket clicked");
+            const createTicketReq = async () => {
+                const response = await fetch('https://1nen0nkbak.execute-api.us-west-2.amazonaws.com/dev/createTicket', {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: '',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'No Auth', // !!!TODO replace with token Auth
+                        //'Access-Control-Allow-Origin': '*',
+                        //"Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+                        'subject': 'Contact and Send Replacement',
+                        'comment': 'Charge Capacity Issue',
+                        'priority': 'Urgent'
+                    }
+                });
+                const res = await response.json(); //extract JSON from the http response
+                console.log(`createTicket() - res: ${JSON.stringify(res, null, 2)}`);
+                ticketID = res.id;
+                console.log(`createTicket() - ticketID: ${ticketID}`);
+            }
+
+            createTicketReq();
+        }
+
+        function deleteTicket(ticket_to_delete) {
+            if (!ticket_to_delete || ticket_to_delete == '') {
+                console.log("deleteTicket() called without a valid ticket_to_delete ID");
+                return;
+            }
+
+            console.log(`deleteTicket() - ticket_to_delete: ${ticket_to_delete}`);
+
+            //alert("Delete Ticket called");
+            const deleteTicketReq = async () => {
+                const response = await fetch('https://1nen0nkbak.execute-api.us-west-2.amazonaws.com/dev/deleteTicket', {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: '',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'No Auth',   
+                        'ticket_id': ticket_to_delete                        
+                    }
+                });
+                const res = await response.json(); //extract JSON from the http response
+                console.log(`deleteTicket() - res: ${JSON.stringify(res, null, 2)}`);
+            }
+
+            deleteTicketReq();
+        }
+
+        function createSunshineObject() {
+            //alert("Create Object clicked");
+            const createObjectReq = async () => {
+                const response = await fetch('https://1nen0nkbak.execute-api.us-west-2.amazonaws.com/dev/createSunshineObject', {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: '',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'No Auth',                        
+                        'objecttype': 'device'                        
+                    }
+                });
+                const res = await response.json(); //extract JSON from the http response
+                console.log(`createSunshineObject() - res: ${JSON.stringify(res, null, 2)}`);
+
+                objectID = res.id;
+                console.log(`createSunshineObject() - objectID: ${objectID}`);
+            }
+
+            createObjectReq();   
+        }
+
+        function deleteSunshineObject(object_to_delete) {
+            //alert("Delete Object clicked");
+
+            if (!object_to_delete || object_to_delete == '') {
+                console.log("deleteSunshineObject() called without a valid object_to_delete ID");
+                return;
+            }
+
+            console.log(`deleteSunshineObject() - object_to_delete: ${object_to_delete}`);
+
+            const deleteObjectReq = async () => {
+                const response = await fetch('https://1nen0nkbak.execute-api.us-west-2.amazonaws.com/dev/deleteSunshineObject', {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: '',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'No Auth',
+                        'object_id': object_to_delete                        
+                    }
+                });
+                const res = await response.json(); //extract JSON from the http response
+                console.log(`deleteSunshineObject() - res: ${JSON.stringify(res, null, 2)}`);
+            }
+
+            deleteObjectReq();   
+        }
+
+        function createSunshineEvent() {
+            //alert("Create Event clicked");
+
+            const createEventReq = async () => {
+                const response = await fetch('https://1nen0nkbak.execute-api.us-west-2.amazonaws.com/dev/createSunshineEvent', {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: '',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'No Auth',                     
+                        'profile_source': 'support',
+                        'event_source': 'Support',
+                        'event_type': 'device',
+                        'event_description': 'ALL LED Lights are off'
+                    }
+                });
+                const res = await response.json(); //extract JSON from the http response
+                console.log(`createSunshineEvent() - res: ${JSON.stringify(res, null, 2)}`);
+            }
+
+            createEventReq();
+        }
+
+        function cleanUp(event) {
+            //alert("Cleanup clicked");
+            event.stopPropagation(); // don't let the page click fire - we are trying to cleanup not add more
+
+            doClean();
+        }
+
+        function doClean() {
+            if (ticketID !== '') {
+                deleteTicket(ticketID);
+                ticketID = '';
+            }
+
+            if (objectID !== '') {
+                deleteSunshineObject(objectID);            
+                objectID = '';
+            }
+        }
+
+    </script>
+</head>
+<body class="bg" onclick="create()" onbeforeunload="return cleanUp(event)">
+    <div>
+        <!--<button onclick="createTicket()">Create Zendesk Ticket</button><br>
+        <button onclick="createSunshineObject()">Create Sunshine Object</button><br>
+        <button onclick="createSunshineEvent()">Create Sunshine Event</button><br>
+        -->
+        <button onclick="cleanUp(event)" class="fixedbutton">Cleanup</button><br>
+    </div>
+</body>
+</html>

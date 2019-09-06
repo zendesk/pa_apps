@@ -1,0 +1,13 @@
+{
+    "version": "0",
+    "id": "86978ffa-0399-6d4b-ba10-a34d1f5e8286",
+    "detail-type": "Scheduled Event",
+    "source": "aws.events",
+    "account": "459762880391",
+    "time": "2019-07-30T21:24:52Z",
+    "region": "us-west-2",
+    "resources": [
+        "arn:aws:events:us-west-2:459762880391:rule/Workflow-dev-GetSellContactsEventsRuleSchedule1-1WWSPPMR03HVW"
+    ],
+    "detail": {}
+}

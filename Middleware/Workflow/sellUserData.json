@@ -1,0 +1,59 @@
+{
+    "items": [
+        {
+            "data": {
+                "id": 1480538,
+                "name": "Ed Willis",
+                "email": "ewillis@zendesk.com",
+                "phone_number": null,
+                "timezone": null,
+                "created_at": "2019-07-30T16:16:46Z",
+                "updated_at": "2019-07-30T18:03:40Z",
+                "confirmed": true,
+                "deleted_at": null,
+                "role": "admin",
+                "roles": [],
+                "status": "active",
+                "invited": null,
+                "team_name": null,
+                "group": null,
+                "reports_to": null,
+                "confirmation_token": null
+            },
+            "meta": {
+                "type": "user"
+            }
+        },
+        {
+            "data": {
+                "id": 8880088,
+                "name": "Testy Tester",
+                "email": "testy@example.com",
+                "phone_number": null,
+                "timezone": null,
+                "created_at": "2019-07-31T16:16:46Z",
+                "updated_at": "2019-07-31T18:03:40Z",
+                "confirmed": true,
+                "deleted_at": null,
+                "role": "user",
+                "roles": [],
+                "status": "active",
+                "invited": null,
+                "team_name": null,
+                "group": null,
+                "reports_to": null,
+                "confirmation_token": null
+            },
+            "meta": {
+                "type": "user"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1,
+        "links": {
+            "self": "https://api.getbase.com/v2/users?page=1&per_page=25"
+        },
+        "type": "collection"
+    }
+}

@@ -1,0 +1,129 @@
+{
+    "resource": "/createTicket",
+    "path": "/createTicket",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "Cache-Control": "no-cache",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "US",
+        "comment": "ticket comment",
+        "Host": "1nen0nkbak.execute-api.us-west-2.amazonaws.com",
+        "Postman-Token": "e524fa76-efed-4000-9ac9-710c2b137e4e",
+       
+        "subject": "ticket subject",
+        "User-Agent": "PostmanRuntime/7.15.0",
+        "Via": "1.1 5afc8eca980390e71a86518c6f90001a.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Id": "fQVAMaN8kK9fKULJcoRFLX9Qt7-0MMFEw7AdtuvITnrqI2iGLusu4w==",
+        "X-Amzn-Trace-Id": "Root=1-5d30e7d5-9fa65c1b34d6c35825341649",
+        "X-Forwarded-For": "23.241.15.64, 52.46.17.80",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept": [
+            "*/*"
+        ],
+        "Accept-Encoding": [
+            "gzip, deflate"
+        ],
+        "Cache-Control": [
+            "no-cache"
+        ],
+        "CloudFront-Forwarded-Proto": [
+            "https"
+        ],
+        "CloudFront-Is-Desktop-Viewer": [
+            "true"
+        ],
+        "CloudFront-Is-Mobile-Viewer": [
+            "false"
+        ],
+        "CloudFront-Is-SmartTV-Viewer": [
+            "false"
+        ],
+        "CloudFront-Is-Tablet-Viewer": [
+            "false"
+        ],
+        "CloudFront-Viewer-Country": [
+            "US"
+        ],
+        "comment": [
+            "ticket comment"
+        ],
+        "Host": [
+            "1nen0nkbak.execute-api.us-west-2.amazonaws.com"
+        ],
+        "Postman-Token": [
+            "e524fa76-efed-4000-9ac9-710c2b137e4e"
+        ],
+        "priority": [
+            "Urgent"
+        ],
+        "subject": [
+            "ticket subject"
+        ],
+        "User-Agent": [
+            "PostmanRuntime/7.15.0"
+        ],
+        "Via": [
+            "1.1 5afc8eca980390e71a86518c6f90001a.cloudfront.net (CloudFront)"
+        ],
+        "X-Amz-Cf-Id": [
+            "fQVAMaN8kK9fKULJcoRFLX9Qt7-0MMFEw7AdtuvITnrqI2iGLusu4w=="
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-5d30e7d5-9fa65c1b34d6c35825341649"
+        ],
+        "X-Forwarded-For": [
+            "23.241.15.64, 52.46.17.80"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "s8rwo1",
+        "resourcePath": "/createTicket",
+        "httpMethod": "POST",
+        "extendedRequestId": "dCkpaGs1PHcFpMg=",
+        "requestTime": "18/Jul/2019:21:42:45 +0000",
+        "path": "/dev/createTicket",
+        "accountId": "459762880391",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "domainPrefix": "1nen0nkbak",
+        "requestTimeEpoch": 1563486165865,
+        "requestId": "fac7f640-a9a4-11e9-9349-fd849b7ba2e4",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "23.241.15.64",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "PostmanRuntime/7.15.0",
+            "user": null
+        },
+        "domainName": "1nen0nkbak.execute-api.us-west-2.amazonaws.com",
+        "apiId": "1nen0nkbak"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}
