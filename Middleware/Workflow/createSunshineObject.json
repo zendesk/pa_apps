@@ -1,0 +1,128 @@
+{
+    "resource": "/createSunshineObject",
+    "path": "/createSunshineObject",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "Cache-Control": "no-cache",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "US",
+        "Host": "1nen0nkbak.execute-api.us-west-2.amazonaws.com",
+        "objecttype": "device",
+        "attributes": {
+            "type": "type",
+            "location": "location",
+            "ip_address": "000.000.000.000",
+            "current_status": "On",
+            "windows_instance_id": "123"
+        },
+        "Postman-Token": "a2895689-c596-4888-826e-9043a3a39309",
+        "User-Agent": "PostmanRuntime/7.15.0",
+        "Via": "1.1 6a1e4dd9fa29c61c4b71a53d6bf94267.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Id": "-ctey6HD_x5MRTUBJnsbXh4V4O-Z6byrpVnpRAvxUVhGs4rh-i76PA==",
+        "X-Amzn-Trace-Id": "Root=1-5d310fd4-c40a5b08669f5d6236234ccc",
+        "X-Forwarded-For": "23.241.15.64, 52.46.17.55",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept": [
+            "*/*"
+        ],
+        "Accept-Encoding": [
+            "gzip, deflate"
+        ],
+        "Cache-Control": [
+            "no-cache"
+        ],
+        "CloudFront-Forwarded-Proto": [
+            "https"
+        ],
+        "CloudFront-Is-Desktop-Viewer": [
+            "true"
+        ],
+        "CloudFront-Is-Mobile-Viewer": [
+            "false"
+        ],
+        "CloudFront-Is-SmartTV-Viewer": [
+            "false"
+        ],
+        "CloudFront-Is-Tablet-Viewer": [
+            "false"
+        ],
+        "CloudFront-Viewer-Country": [
+            "US"
+        ],
+        "Host": [
+            "1nen0nkbak.execute-api.us-west-2.amazonaws.com"
+        ],
+        "objecttype": [
+            "type"
+        ],
+        "Postman-Token": [
+            "a2895689-c596-4888-826e-9043a3a39309"
+        ],
+        "User-Agent": [
+            "PostmanRuntime/7.15.0"
+        ],
+        "Via": [
+            "1.1 6a1e4dd9fa29c61c4b71a53d6bf94267.cloudfront.net (CloudFront)"
+        ],
+        "X-Amz-Cf-Id": [
+            "-ctey6HD_x5MRTUBJnsbXh4V4O-Z6byrpVnpRAvxUVhGs4rh-i76PA=="
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-5d310fd4-c40a5b08669f5d6236234ccc"
+        ],
+        "X-Forwarded-For": [
+            "23.241.15.64, 52.46.17.55"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "ffsfnk",
+        "resourcePath": "/createSunshineObject",
+        "httpMethod": "POST",
+        "extendedRequestId": "dC9pNGOLvHcF8sA=",
+        "requestTime": "19/Jul/2019:00:33:24 +0000",
+        "path": "/dev/createSunshineObject",
+        "accountId": "459762880391",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "domainPrefix": "1nen0nkbak",
+        "requestTimeEpoch": 1563496404583,
+        "requestId": "d1883081-a9bc-11e9-9e17-696b6e986fe2",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "23.241.15.64",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "PostmanRuntime/7.15.0",
+            "user": null
+        },
+        "domainName": "1nen0nkbak.execute-api.us-west-2.amazonaws.com",
+        "apiId": "1nen0nkbak"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

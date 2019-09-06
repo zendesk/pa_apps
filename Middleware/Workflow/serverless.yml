@@ -5,6 +5,12 @@ provider:
   name: aws
   runtime: nodejs10.x
   region: ${opt:region, 'us-west-2'} # Overwrite the default region used. Default is now us-west-2 (Oregon)
+  environment:
+    apiToken: ${ssm:/Workflow/dev/apiToken}
+    subDomain: ${ssm:/Workflow/dev/subdomain}
+    user: ${ssm:/Workflow/dev/user}
+    user_id: ${ssm:/Workflow/dev/user_id}
+    #connectPrivateKey: ${ssm:/Workflow/dev/connectPrivateKey}    
 
 functions:
   callIntegration:
@@ -14,8 +20,88 @@ functions:
     timeout: 10
     events:
       - schedule: rate(1 minute)
-    environment:
-      apiToken: ${ssm:/Workflow/dev/apiToken}
-      subDomain: ${ssm:/Workflow/dev/subdomain}
-      user: ${ssm:/Workflow/dev/user}
+        enabled: false
+    environment:      
       connectPrivateKey: ${ssm:/Workflow/dev/connectPrivateKey}
+  createTicket:
+    handler: handler.createTicket
+    description: MVP function to do Create a Ticket
+    memorySize: 512
+    timeout: 10
+    events:
+      - http: POST createTicket
+        cors: true
+  deleteTicket:
+    handler: handler.deleteTicket
+    description: MVP function to do Delete a Ticket
+    memorySize: 512
+    timeout: 10
+    events:
+      - http: POST deleteTicket
+        cors: true
+  createSunshineObject:
+    handler: handler.createSunshineObject
+    description: MVP function to do Create a Sunshine Object
+    memorySize: 512
+    timeout: 10
+    events:
+      - http: POST createSunshineObject
+        cors: true
+  deleteSunshineObject:
+    handler: handler.deleteSunshineObject
+    description: MVP function to do Delete a Sunshine Object
+    memorySize: 512
+    timeout: 10
+    events:
+      - http: POST deleteSunshineObject
+        cors: true
+  createSunshineEvent:
+    handler: handler.createSunshineEvent
+    description: MVP function to do Create a Sunshine Event
+    memorySize: 512
+    timeout: 10
+    events:
+      - http: POST createSunshineEvent
+        cors: true
+  getSellContacts:
+    handler: handler.getSellContacts
+    description: MVP function to do Get a List of All Sell Contacts
+    memorySize: 512
+    timeout: 10
+    events:
+      - schedule: rate(1 minute)
+        enabled: true
+    environment:      
+      sellAccessToken: ${ssm:/Workflow/dev/sellAccessToken}
+  getSellLeads:
+    handler: handler.getSellLeads
+    description: MVP function to do Get a List of All Sell Leads
+    memorySize: 512
+    timeout: 10
+    events:
+      - schedule: rate(1 minute)
+        enabled: true
+    environment:      
+      sellAccessToken: ${ssm:/Workflow/dev/sellAccessToken}
+  getSellUsers:
+    handler: handler.getSellUsers
+    description: MVP function to do Get a List of All Sell Users
+    memorySize: 512
+    timeout: 10
+    events:
+      - schedule: rate(1 minute)
+        enabled: true
+    environment:      
+      sellAccessToken: ${ssm:/Workflow/dev/sellAccessToken}
+  putSellUsersToSunshineProfile:
+    handler: handler.putSellUsersToSunshineProfile
+    description: MVP function to do Put a list of Sell Users to a Sunshine Profile
+    memorySize: 512
+    timeout: 10
+    events:
+      - schedule: rate(1 minute)
+        enabled: true
+    environment:      
+      sellAccessToken: ${ssm:/Workflow/dev/sellAccessToken}
+    
+
